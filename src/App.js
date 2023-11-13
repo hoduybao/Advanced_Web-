@@ -1,6 +1,6 @@
 import './App.css';
 import Login from './pages/Authentication/Login';
-import Public from './pages/Authentication/Authentication';
+import Public from './pages/LandingPage/LandingPage';
 import Register from './pages/Authentication/Register';
 import path from './utils/path';
 
@@ -15,6 +15,7 @@ function App() {
           <Route path={path.LOGIN} element={<Login />}></Route>
           <Route path={path.REGISTER} element={<Register />}></Route>
         </Route>
+        <Route path={path.PUBLIC} element={<Public />}></Route>
       </Routes>
     </div>
   );
