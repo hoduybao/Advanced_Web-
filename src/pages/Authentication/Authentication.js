@@ -1,5 +1,5 @@
 import React from "react";
-import { Outlet, useNavigate,useLocation} from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 
 import Header from "../../components/Header";
 const Authentication = () => {
@@ -16,13 +16,13 @@ const Authentication = () => {
     } else {
       navigate("/auth/register");
     }
-  };  
+  };
 
   return (
     <div className="w-full flex flex-col items-center bg-purple-50">
-      <Header currentPage={currentPage} onSwitchPage={handleSwitchPage}/>
+      <Header currentPage={currentPage} onSwitchPage={handleSwitchPage} />
       <div className="w-main">
-      <Outlet/>
+        <Outlet />
       </div>
     </div>
   );
