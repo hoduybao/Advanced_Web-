@@ -1,6 +1,7 @@
 import './App.css';
 import Login from './pages/Authentication/Login';
 import Public from './pages/LandingPage/LandingPage';
+import Home from './pages/Home/Home'
 import Register from './pages/Authentication/Register';
 import path from './utils/path';
 
@@ -16,6 +17,7 @@ function App() {
           <Route path={path.REGISTER} element={<Register />}></Route>
         </Route>
         <Route path={path.PUBLIC} element={<Public />}></Route>
+        <Route path={path.MYHOME} element={<Home />}></Route>
       </Routes>
     </div>
   );

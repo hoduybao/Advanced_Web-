@@ -6,7 +6,7 @@ import Content from "./components/Content";
 
 const LandingPage = () => {
     return (
-        <div className="w-full flex flex-col items-center bg-purple-50">
+        <div className="w-full flex flex-col items-center">
             <Header />
             <div className="w-main">
                 <Navbar />

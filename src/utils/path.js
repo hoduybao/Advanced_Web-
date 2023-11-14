@@ -4,6 +4,7 @@ const path = {
     HOME: '',
     LOGIN: 'login',
     REGISTER: 'register',
+    MYHOME: '/home',
 }
 
 export default path

@@ -1,23 +1,25 @@
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.svg";
 import path from "../utils/path";
-import { BiLogIn, BiSearch } from "react-icons/bi";
+import { BiLogIn } from "react-icons/bi";
 import { useState } from "react";
 
 function Header({ currentPage, onSwitchPage }) {
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const handleSwitch = () => {
     if (currentPage === "login") {
       onSwitchPage("register");
-    } else {
+    } else if (currentPage === "register") {
       onSwitchPage("login");
     }
   };
 
-  const handleSearchClick = () => {
-    setIsSearchOpen(!isSearchOpen);
+  const handleProfileClick = () => {
+    setIsProfileOpen(!isProfileOpen);
   };
+
 
   return (
     <div className="flex justify-center w-full h-[56px] bg-[#210035]">
@@ -41,24 +43,9 @@ function Header({ currentPage, onSwitchPage }) {
             </button>
           </Link>
         )}
-        {currentPage !== "register" && currentPage !== "login" && (
+
+        {currentPage !== "register" && currentPage !== "login" && currentPage !== "home" && (
           <div className="flex gap-4 items-center">
-            <div className="relative">
-              <BiSearch
-                size={20}
-                className="cursor-pointer text-white"
-                onClick={() => handleSearchClick()}
-              />
-              {isSearchOpen && (
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="absolute top-0 right-0 bg-white border border-gray-300 p-1 rounded"
-                  />
-                </div>
-              )}
-            </div>
             <Link to="/auth/register">
               <button className="flex justify-center gap-2 text-sm rounded items-center bg-purple-900 hover:bg-white hover:text-black h-8 text-white px-5">
                 <BiLogIn size={20} />
@@ -71,6 +58,27 @@ function Header({ currentPage, onSwitchPage }) {
                 <span>Login</span>
               </button>
             </Link>
+          </div>
+        )}
+
+        {currentPage === "home" && (
+          <div class="relative ml-3">
+            <div>
+              <button type="button"
+                class="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                id="user-menu-button"
+                aria-expanded="false"
+                aria-haspopup="true"
+                onClick={() => handleProfileClick()}>
+                <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" />
+              </button>
+            </div>
+            {isProfileOpen && (
+              <div class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                <a href="/" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</a>
+                <a href="/" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-1">Settings</a>
+                <a href="/" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2">Sign out</a>
+              </div>)}
           </div>
         )}
       </div>
