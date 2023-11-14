@@ -1,6 +1,6 @@
 import React from "react";
 
-import Header from "../../pages/LandingPage/components/Header";
+import Header from "../../components/Header";
 import Navbar from "./components/Navbar";
 import Content from "./components/Content";
 
@@ -10,6 +10,8 @@ const LandingPage = () => {
             <Header />
             <div className="w-main">
                 <Navbar />
+            </div>
+            <div className="w-full mt-1 bg-white">
                 <Content />
             </div>
         </div>
