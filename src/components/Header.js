@@ -3,8 +3,9 @@ import logo from "../assets/logo.svg";
 import path from "../utils/path";
 import { BiLogIn } from "react-icons/bi";
 import { useState } from "react";
-
-function Header({ currentPage, onSwitchPage ,isLogin}) {
+import { useSelector } from "react-redux";
+function Header({ currentPage, onSwitchPage}) {
+  const {isLoggin,token}=useSelector(state=>state.user);
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const handleSwitch = () => {
@@ -43,7 +44,7 @@ function Header({ currentPage, onSwitchPage ,isLogin}) {
           </Link>
         )}
 
-        {currentPage !== "register" && currentPage !== "login" && !isLogin && (
+        {currentPage !== "register" && currentPage !== "login" && !isLoggin && (
           <div className="flex gap-4 items-center">
             <Link to="/auth/register">
               <button className="flex justify-center gap-2 text-sm rounded items-center bg-purple-900 hover:bg-white hover:text-black h-8 text-white px-5">
@@ -60,7 +61,7 @@ function Header({ currentPage, onSwitchPage ,isLogin}) {
           </div>
         )}
 
-        {isLogin && (
+        {isLoggin && (
           <div class="relative ml-3">
             <div>
               <button type="button"
