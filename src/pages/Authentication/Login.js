@@ -1,7 +1,19 @@
-import { Link } from "react-router-dom";
+import { Link ,useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import Toast from "../../components/Toast";
+import notify from "../../utils/toast";
+
 function Login() {
+    const location = useLocation();
+    useEffect(() => {
+        if (location.pathname === "/auth/login" && location.state && location.state.fromRegister) {
+          notify("success", "Register successfully!");
+        }
+      }, [location]);
   return (
     <div className="relative w-full min-h-screen">
+              <Toast />
+
       <div className="absolute top-[40%] bg-white rounded-2xl border shadow-2xl  left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[460px]">
         <h3 className="py-3 bg-purple-900 rounded-t-2xl text-white font-medium text-center text-lg">
           Login to BTH Classroom
