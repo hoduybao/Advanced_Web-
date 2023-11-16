@@ -1,18 +1,15 @@
 import React from "react";
 
 import Header from "../../components/Header";
-import Navbar from "./components/Navbar";
-import Content from "./components/Content";
+import { Outlet } from "react-router-dom";
 
-const LandingPage = () => {
+const LandingPage = ({isLogin}) => {
     return (
         <div className="w-full flex flex-col items-center">
-            <Header />
-            <div className="w-main">
-                <Navbar />
-            </div>
-            <div className="w-full mt-1 bg-white">
-                <Content />
+            <Header isLogin />
+    
+            <div className="w-full bg-white">
+                <Outlet />
             </div>
         </div>
     );

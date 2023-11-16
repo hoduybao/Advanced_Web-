@@ -2,7 +2,7 @@ function MainContent() {
     return (
         <>
             <div class="p-4 sm:ml-64 bg-white">
-                <div class="p-4 border border-gray-200 border-dashed rounded-lg dark:border-gray-700">
+                <div class="p-4 rounded-lg">
                     <div class="grid grid-cols-3 gap-4 mb-4">
                         <div className="relative bg-white p-4 rounded-md shadow-md">
                             <div className="bg-blue-500 text-white py-2 px-4 rounded-t-md">

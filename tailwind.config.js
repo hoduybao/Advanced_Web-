@@ -7,7 +7,7 @@ module.exports = {
         main: ["Poppins", "sans-serif"],
       },
       width: {
-        main: "90%",
+        main: "90%", 
       },
     },
   },

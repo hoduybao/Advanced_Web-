@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function Content() {
     return (
-        <main className="container mx-auto mt-8">
+        <main className="container mx-auto mt-10">
             <section className="text-center mb-16">
                 <h2 className="text-3xl font-bold text-gray-800">Welcome to BTH Classroom</h2>
                 <p className="text-gray-600 mt-4">

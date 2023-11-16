@@ -8,8 +8,8 @@ import MainContent from "./components/MainContent";
 const Home = () => {
     return (
         <div className="w-full flex flex-col items-center">
-            <Header currentPage={"home"} />
-            <div className="w-main">
+            <Header isLogin={true} />
+            <div className="w-full">
                 <SideBar />
                 <MainContent />
             </div>

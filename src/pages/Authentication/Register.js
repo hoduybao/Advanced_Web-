@@ -34,12 +34,14 @@ function Register() {
           <button className="bg-purple-800 cursor-pointer text-white rounded-md py-[6px] text-base mt-6 mb-10">
             Register
           </button>
-          <Link>
             <div className="text-center">
               Already have an account?{" "}
+              <Link to='/auth/login'>
+
               <span className="text-purple-600"> Login now</span>
+              </Link>
+
             </div>
-          </Link>
         </div>
       </div>
     </div>
