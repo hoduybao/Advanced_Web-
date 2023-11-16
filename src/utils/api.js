@@ -3,7 +3,10 @@ import axios from "./axios";
 
 class UserService {
     postRegister = async (path, options = {}) => {
-        console.log(path);
+        const response = await axios.post(path, options);
+        return response;
+    };
+    postLogin = async (path, options = {}) => {
         const response = await axios.post(path, options);
         return response;
     };

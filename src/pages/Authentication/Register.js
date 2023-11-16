@@ -105,7 +105,7 @@ function Register() {
             name="name"
             onChange={handleChange}
             type="text"
-            className="pl-2 mt-1  p-[6px] rounded-md border border-gray-300 outline-none focus:border-sky-400"
+            className="pl-2 mt-1  p-[6px] rounded-md border border-gray-300 outline-none focus:border-purple-900"
           ></input>
           {errors.name && (
             <span className="text-red-500 mt-[2px]">{errors.name}</span>
@@ -117,7 +117,7 @@ function Register() {
             name="email"
             onChange={handleChange}
             type="email"
-            className="pl-2 mt-1  p-[6px] rounded-md border border-gray-300 outline-none  focus:border-sky-400"
+            className="pl-2 mt-1  p-[6px] rounded-md border border-gray-300 outline-none  focus:border-purple-900"
           ></input>
           {errors.email && (
             <span className="text-red-500 mt-[2px]">{errors.email}</span>
@@ -128,7 +128,7 @@ function Register() {
             name="password"
             onChange={handleChange}
             type="password"
-            className="mt-1  p-[6px] rounded-md border border-gray-300 outline-none  focus:border-sky-400"
+            className="mt-1  p-[6px] rounded-md border border-gray-300 outline-none  focus:border-purple-900"
           ></input>
           {errors.password && (
             <span className="text-red-500 mt-[2px]">{errors.password}</span>
@@ -139,7 +139,7 @@ function Register() {
             name="confirm"
             onChange={handleChange}
             type="password"
-            className="mt-1 p-[6px] rounded-md border border-gray-300 outline-none  focus:border-sky-400"
+            className="mt-1 p-[6px] rounded-md border border-gray-300 outline-none  focus:border-purple-900"
           ></input>
           {errors.confirm && (
             <span className="text-red-500 mt-[2px]">{errors.confirm}</span>
@@ -147,7 +147,7 @@ function Register() {
 
           <button
             onClick={handleRegister}
-            className="bg-purple-800 cursor-pointer text-white rounded-md py-[6px] min-h-[36px]  text-base mt-6 mb-10 flex justify-center"
+            className="bg-purple-800 cursor-pointer text-white rounded py-[6px] min-h-[36px]  text-base mt-6 mb-10 flex justify-center"
           >
             {loading ? (
               <div className="animate-spin">

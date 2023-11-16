@@ -12,9 +12,9 @@ import Authentication from "./pages/Authentication/Authentication";
 import LandingPage from "./pages/LandingPage/LandingPage";
 import { useState } from "react";
 import MainContent from "./pages/Home/components/MainContent";
-
+ import { useSelector } from "react-redux";
 function App() {
-  const [isLogin, setisLogin] = useState(true);
+  const {isLoggin,token}=useSelector(state=>state.user);
   return (
     <div className="min-h-screen font-main">
       <Routes>
@@ -24,9 +24,9 @@ function App() {
         </Route>
         <Route
           path={path.PUBLIC}
-          element={isLogin ? <Home /> : <LandingPage />}
+          element={isLoggin ? <Home /> : <LandingPage />}
         >
-          {isLogin ? (
+          {isLoggin ? (
             <Route path={path.HOME} element={<MainContent />}></Route>
           ) : (
             <Route path={path.HOME} element={<Content />}></Route>

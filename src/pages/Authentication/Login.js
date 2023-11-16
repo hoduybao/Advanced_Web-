@@ -1,15 +1,104 @@
-import { Link ,useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { Link ,useLocation,useNavigate } from "react-router-dom";
+import { useEffect,useState } from "react";
 import Toast from "../../components/Toast";
+import { VscLoading } from "react-icons/vsc";
+
+import UserService from "../../utils/api";
 import notify from "../../utils/toast";
+import {login } from "../../store/user/userSlice"
+import { useDispatch } from "react-redux";
 
 function Login() {
     const location = useLocation();
+    const navigate = useNavigate();
+
+    const dispatch=useDispatch();
     useEffect(() => {
         if (location.pathname === "/auth/login" && location.state && location.state.fromRegister) {
           notify("success", "Register successfully!");
         }
       }, [location]);
+
+
+      const [loading, setLoading] = useState(false);
+     
+      const [signin, setSignin] = useState({
+        email: "",
+        password: "",
+      });
+      const [errors, setErrors] = useState({
+        email: "",
+        password: "",
+      });
+
+      
+  let success = true;
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setSignin((prevInputs) => ({ ...prevInputs, [name]: value }));
+
+    if (value === "") {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: `Please input your ${name}!`,
+      }));
+    } else {
+      if (name === "email" && !/\S+@\S+\.\S+/.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: `The input is not valid E-mail!`,
+        }));
+      } else {
+        setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+      }
+    }
+  };
+  const handleLogin = (event) => {
+    event.preventDefault();
+
+    // Validate inputs
+    const newErrors = {};
+    if (!signin.email) {
+      newErrors.email = "Please input your email!";
+      success = false;
+    }
+ 
+    if (!signin.password) {
+      newErrors.password = "Please input your password!";
+      success = false;
+    }
+    
+
+    // Handle form submission logic
+    if (success) {
+      setLoading(true);
+      const fetch = async () => {
+        let response = await UserService.postLogin(`user/login`, {
+          email: signin.email,
+          password: signin.password,
+        });
+
+        console.log(response);
+        if (response.success) {
+          setLoading(false);  
+          dispatch(login({isLoggin:true,token:response.accessToken,userData:response.userData}));
+          navigate("/",{ state: { fromLogin: true } });
+
+        } else {
+          setLoading(false);
+          newErrors.email = response.message;
+          setErrors(newErrors);
+        }
+      };
+      fetch();
+    } else {
+      setErrors(newErrors);
+    }
+  };
+
+
+
   return (
     <div className="relative w-full min-h-screen">
               <Toast />
@@ -21,21 +110,42 @@ function Login() {
         <div className="p-8 text-sm flex flex-col">
           <label>Email</label>
           <input
+          value={signin.email}
+          onChange={handleChange}
+          name="email"
             type="text"
-            className="pl-2 mt-1 mb-4 p-[6px] rounded-md border border-gray-300  focus:border-sky-400"
+            className="pl-2 mt-1 p-[6px] rounded-md border outline-none border-gray-300  focus:border-purple-900"
           ></input>
-          <label>Password</label>
+            {errors.email && (
+            <span className="text-red-500 mt-[2px]">{errors.email}</span>
+          )}
+          <label className="mt-4">Password</label>
           <input
+           value={signin.password}
+           onChange={handleChange}
+           name="password"
             type="password"
-            className=" pl-2 my-1 p-[6px] rounded-md border border-gray-300  focus:border-sky-400"
+            className=" pl-2 mt-1 p-[6px] rounded-md border border-gray-300 outline-none  focus:border-purple-900"
           ></input>
+            {errors.password && (
+            <span className="text-red-500 mt-[2px]">{errors.password}</span>
+          )}
           <Link>
             <div className="text-right">
               Forgot your <span className="text-purple-600"> Password ?</span>
             </div>
           </Link>
-          <button className="bg-purple-800 cursor-pointer text-white rounded-md py-[6px] text-base mt-6 mb-10">
-            LOGIN
+          <button
+            onClick={handleLogin}
+            className="bg-purple-800 cursor-pointer text-white rounded py-[6px] min-h-[36px]  text-base mt-6 mb-10 flex justify-center"
+          >
+            {loading ? (
+              <div className="animate-spin">
+                <VscLoading size={22} />
+              </div>
+            ) : (
+              "Login"
+            )}
           </button>
           <div className="text-center">
             Did you have an account yet?{" "}
