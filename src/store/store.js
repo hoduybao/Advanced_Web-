@@ -1,4 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
+import {
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist'
 import storage from 'redux-persist/lib/storage';
 import { persistStore, persistReducer } from 'redux-persist';
 import userSlice from './user/userSlice';
@@ -9,13 +17,22 @@ const commonConfig={
 
 const userConfig={
   ...commonConfig,
-  whitelish: ['isLoggin','token']
+  whitelist: ['isLoggin','token']
 }
+
+const persistedReducer = persistReducer(userConfig, userSlice);
 
 export const store = configureStore({
   reducer: {
-     user: persistReducer(userConfig,userSlice)
+     user: persistedReducer
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 });
 
 export const persistor= persistStore(store);
+

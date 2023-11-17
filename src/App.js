@@ -14,7 +14,7 @@ import { useState } from "react";
 import MainContent from "./pages/Home/components/MainContent";
  import { useSelector } from "react-redux";
 function App() {
-  const {isLoggin,token}=useSelector(state=>state.user);
+  const {isLoggin,mes}=useSelector(state=>state.user);
   return (
     <div className="min-h-screen font-main">
       <Routes>
@@ -24,9 +24,9 @@ function App() {
         </Route>
         <Route
           path={path.PUBLIC}
-          element={isLoggin ? <Home /> : <LandingPage />}
+          element={isLoggin||mes ? <Home /> : <LandingPage />}
         >
-          {isLoggin ? (
+          {isLoggin|| mes ? (
             <Route path={path.HOME} element={<MainContent />}></Route>
           ) : (
             <Route path={path.HOME} element={<Content />}></Route>

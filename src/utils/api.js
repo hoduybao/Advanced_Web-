@@ -10,6 +10,10 @@ class UserService {
         const response = await axios.post(path, options);
         return response;
     };
+    getCurrent=async (path)=>{
+        const response = await axios.get(path);
+        return response;
+    }
 }
 const ApiUser=new UserService();
 export default ApiUser;

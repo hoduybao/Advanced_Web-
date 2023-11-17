@@ -2,7 +2,7 @@ import React from "react";
 
 import Header from "../../components/Header";
 import SideBar from "./components/SideBar";
-import MainContent from "./components/MainContent";
+import { Outlet } from "react-router-dom";
 
 
 const Home = () => {
@@ -11,7 +11,7 @@ const Home = () => {
             <Header />
             <div className="w-full">
                 <SideBar />
-                <MainContent />
+                <Outlet />
             </div>
         </div>
     );
