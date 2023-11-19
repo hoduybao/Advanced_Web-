@@ -23,7 +23,7 @@ function Profile() {
   useEffect(() => {
     // Kiểm tra xem current có giá trị hay không
     if (current) {
-      setProfile({ ...current, dateofbirth: convertDate(current.dateofbirth) });
+      setProfile({ ...current, dateofbirth:current.dateofbirth? convertDate(current.dateofbirth):current.dateofbirth });
     }
   }, [current]);
 
