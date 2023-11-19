@@ -77,20 +77,13 @@ function Header({ currentPage, onSwitchPage }) {
         )}
 
         {currentPage !== "register" && currentPage !== "login" && !isLoggin && (
-          <div className="flex gap-4 items-center">
-            <Link to="/auth/register">
-              <button className="flex justify-center gap-2 text-sm rounded items-center bg-purple-900 hover:bg-white hover:text-black h-8 text-white px-5">
-                <BiLogIn size={20} />
-                <span>Register</span>
-              </button>
-            </Link>
+         
             <Link to="/auth/login">
               <button className="flex justify-center gap-2 text-sm rounded items-center bg-purple-900 hover:bg-white hover:text-black h-8 text-white px-5">
                 <BiLogIn size={20} />
                 <span>Login</span>
               </button>
             </Link>
-          </div>
         )}
 
         {isLoggin && (
@@ -131,6 +124,7 @@ function Header({ currentPage, onSwitchPage }) {
                 <div
                   onClick={() => {
                     dispatch(logout());
+                    navigate("/auth/login");
                   }}
                   className="block px-4 py-2 text-sm hover:bg-gray-100 text-gray-700 cursor-pointer"
                   role="menuitem"

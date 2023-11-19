@@ -14,6 +14,11 @@ class UserService {
         const response = await axios.get(path);
         return response;
     }
+    updateUser=async (path,options = {})=>{
+        const response = await axios.put(path,options);
+        console.log(response)
+        return response;
+    }
 }
 const ApiUser=new UserService();
 export default ApiUser;

@@ -7,6 +7,7 @@ import UserService from "../../utils/api";
 import notify from "../../utils/toast";
 import {login } from "../../store/user/userSlice"
 import { useDispatch } from "react-redux";
+import Swal from "sweetalert2";
 
 function Login() {
     const location = useLocation();
@@ -87,7 +88,8 @@ function Login() {
 
         } else {
           setLoading(false);
-          newErrors.email = response.message;
+          Swal.fire("Opps!", response.message, "error");
+
           setErrors(newErrors);
         }
       };

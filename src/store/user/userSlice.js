@@ -44,6 +44,20 @@ export const userSlice= createSlice ({
             state.token=null;
             state.mes="The login session has expired. Please log in again to continue!"
         })
+        builder.addCase(actions.updateUser.pending,(state)=>{
+            state.isLoading=true;
+        })
+        builder.addCase(actions.updateUser.fulfilled, (state,action)=>{
+            state.isLoading=false;
+            state.current=action.payload;
+            state.isLoggin=true;
+        });
+
+        builder.addCase(actions.updateUser.rejected, (state,action)=>{
+            state.isLoading=false;
+            state.isLoggin=true;
+
+        })
     }
    
 })
