@@ -10,10 +10,10 @@ import path from "./utils/path";
 import { Routes, Route } from "react-router-dom";
 import Authentication from "./pages/Authentication/Authentication";
 import LandingPage from "./pages/LandingPage/LandingPage";
-import { useState } from "react";
 import MainContent from "./pages/Home/components/MainContent";
  import { useSelector } from "react-redux";
 import ForgetPassword from "./pages/Authentication/ForgetPassword";
+import ChangePassword from "./pages/LandingPage/ChangePassword";
 function App() {
   const {isLoggin,mes}=useSelector(state=>state.user);
   return (
@@ -38,6 +38,8 @@ function App() {
 
         <Route path={path.LandingPage} element={<LandingPage isLogin />}>
           <Route path={path.PROFILE} element={<Profile />}></Route>
+          <Route path={path.CHANGE_PASSWORD} element={<ChangePassword />}></Route>
+
         </Route>
       </Routes>
     </div>

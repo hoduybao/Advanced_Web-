@@ -6,6 +6,8 @@ const path = {
     REGISTER: 'register',
     MYHOME: '/home',
     PROFILE:'profile',
+    CHANGE_PASSWORD:'change-password',
+
     FORGET_PASSWORD:'forget-password'
 }
 

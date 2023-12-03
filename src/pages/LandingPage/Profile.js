@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { updateUser } from "../../store/user/asyncActions";
 import Swal from "sweetalert2";
+import { Link } from "react-router-dom";
 
 function Profile() {
   const [loading, setLoading] = useState(false);
@@ -76,22 +77,16 @@ function Profile() {
             setLoading(false);
             setAvatar(null);
             Swal.fire("Congratulation!", "Update successfully", "success");
-            // Thực hiện các thao tác khác sau khi cập nhật thành công
-            // notify('success', 'Báo cáo thành công!');
-            // handleClose();
+         
           })
           .catch((error) => {
             setLoading(false);
             setAvatar(null);
             Swal.fire("Opps!", "Update failed", "error");
-            // Thực hiện các thao tác khác sau khi cập nhật thất bại
-            // notify('error', 'Cập nhật thất bại!');
+         
           });
 
-        // if (response.status === 'ok') {
-        //   //  notify('success', 'Báo cáo thành công!');
-        // }
-        //  handleClose();
+      
       };
       fetch();
     }
@@ -124,7 +119,9 @@ function Profile() {
 
           <div className="flex flex-col justify-center">
             <h1 className="text-xl font-medium"> {profile?.fullname}</h1>
-            <h4 className="text-gray-700">Email: {profile?.email}</h4>
+            <h4 className="text-base text-gray-700">Email: {profile?.email}</h4>
+            <Link to="/change-password" className="mt-2 text-base text-purple-700">Change password</Link>
+
           </div>
         </div>
         <div className="w-full py-2 px-5 bg-slate-100 bg-[rgba(245, 246, 250,1)] text-slate-600 shadow ">
