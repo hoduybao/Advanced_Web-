@@ -5,8 +5,10 @@ import { BiLogIn } from "react-icons/bi";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getCurrent } from "../store/user/asyncActions";
-import { logout,clearMessage} from "../store/user/userSlice";
+import { logout,clearMessage,login} from "../store/user/userSlice";
+
 import Swal from "sweetalert2";
+import UserService from "../utils/api";
 
 function Header({ currentPage, onSwitchPage }) {
   const dispatch = useDispatch();
@@ -39,6 +41,39 @@ function Header({ currentPage, onSwitchPage }) {
       dispatch(getCurrent());
     }
   }, [dispatch, isLoggin]);
+  useEffect(() => {
+    const getUser = () => {
+      fetch("http://localhost:5000/auth/login/success", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Credentials": true,
+        },
+      })
+        .then((response) => {
+          if (response.status === 200) return response.json();
+          throw new Error("authentication has been failed!");
+        })
+        .then((resObject) => {
+          dispatch(
+            login({
+              isLoggin: true,
+              token: resObject.accessToken,
+              userData: resObject.userData,
+            })
+          );
+          console.log(resObject.userData)
+          //setUser(resObject.user);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    getUser();
+  }, []);
+
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const handleSwitch = () => {
