@@ -19,6 +19,10 @@ class UserService {
         console.log(response)
         return response;
     }
+    forgetPassword=async (path,options = {})=>{
+        const response = await axios.post(path,options);
+        return response;
+    }
 }
 const ApiUser=new UserService();
 export default ApiUser;

@@ -16,7 +16,7 @@ function Login() {
     const dispatch=useDispatch();
     useEffect(() => {
         if (location.pathname === "/auth/login" && location.state && location.state.fromRegister) {
-          notify("success", "Register successfully!");
+          notify("success", "Register successfully! Please check email to verify account.");
         }
       }, [location]);
 
@@ -132,7 +132,7 @@ function Login() {
             {errors.password && (
             <span className="text-red-500 mt-[2px]">{errors.password}</span>
           )}
-          <Link>
+          <Link to="/auth/forget-password">
             <div className="text-right">
               Forgot your <span className="text-purple-600"> Password ?</span>
             </div>

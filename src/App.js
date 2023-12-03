@@ -13,6 +13,7 @@ import LandingPage from "./pages/LandingPage/LandingPage";
 import { useState } from "react";
 import MainContent from "./pages/Home/components/MainContent";
  import { useSelector } from "react-redux";
+import ForgetPassword from "./pages/Authentication/ForgetPassword";
 function App() {
   const {isLoggin,mes}=useSelector(state=>state.user);
   return (
@@ -21,6 +22,8 @@ function App() {
         <Route path={path.AUTHENTICATION} element={<Authentication />}>
           <Route path={path.LOGIN} element={<Login />}></Route>
           <Route path={path.REGISTER} element={<Register />}></Route>
+          <Route path={path.FORGET_PASSWORD} element={<ForgetPassword />}></Route>
+
         </Route>
         <Route
           path={path.PUBLIC}
