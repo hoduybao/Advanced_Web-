@@ -5,7 +5,7 @@ import { BiLogIn } from "react-icons/bi";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getCurrent } from "../store/user/asyncActions";
-import { logout,clearMessage,login} from "../store/user/userSlice";
+import { logout, clearMessage, login } from "../store/user/userSlice";
 
 import Swal from "sweetalert2";
 import UserService from "../utils/api";
@@ -21,17 +21,12 @@ function Header({ currentPage, onSwitchPage }) {
       if (mes) {
         Swal.fire("Oops!", mes, "info").then(() => {
           dispatch(clearMessage());
-        
-            navigate("/auth/login");
-        
+          navigate("/auth/login");
         });
-      }
-      else{
+      } else {
         if (location.pathname !== "/") {
           navigate("/auth/login");
-
         }
-     
       }
     }
   }, [isLoggin]);
@@ -42,8 +37,9 @@ function Header({ currentPage, onSwitchPage }) {
     }
   }, [dispatch, isLoggin]);
   useEffect(() => {
+    
     const getUser = () => {
-      fetch("http://localhost:5000/auth/login/success", {
+      fetch("http://localhost:5000/api/auth/login/success", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -64,7 +60,7 @@ function Header({ currentPage, onSwitchPage }) {
               userData: resObject.userData,
             })
           );
-          console.log(resObject.userData)
+          console.log(resObject.userData);
           //setUser(resObject.user);
         })
         .catch((err) => {
@@ -72,8 +68,8 @@ function Header({ currentPage, onSwitchPage }) {
         });
     };
     getUser();
+  
   }, []);
-
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const handleSwitch = () => {
@@ -112,13 +108,12 @@ function Header({ currentPage, onSwitchPage }) {
         )}
 
         {currentPage !== "register" && currentPage !== "login" && !isLoggin && (
-         
-            <Link to="/auth/login">
-              <button className="flex justify-center gap-2 text-sm rounded items-center bg-purple-900 hover:bg-white hover:text-black h-8 text-white px-5">
-                <BiLogIn size={20} />
-                <span>Login</span>
-              </button>
-            </Link>
+          <Link to="/auth/login">
+            <button className="flex justify-center gap-2 text-sm rounded items-center bg-purple-900 hover:bg-white hover:text-black h-8 text-white px-5">
+              <BiLogIn size={20} />
+              <span>Login</span>
+            </button>
+          </Link>
         )}
 
         {isLoggin && (
@@ -158,8 +153,11 @@ function Header({ currentPage, onSwitchPage }) {
                 </Link>
                 <div
                   onClick={() => {
+                    window.open(
+                      "https://bth-classroom.onrender.com/api/auth/logout",
+                      "_self"
+                    );
                     dispatch(logout());
-                    navigate("/auth/login");
                   }}
                   className="block px-4 py-2 text-sm hover:bg-gray-100 text-gray-700 cursor-pointer"
                   role="menuitem"

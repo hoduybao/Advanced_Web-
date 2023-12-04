@@ -3,8 +3,7 @@ import { persistor } from '../store/store';
 
 
 const instance = axios.create({
-  //baseURL: process.env.REACT_APP_API_URI,
-  baseURL:process.env.REACT_APP_API_URI_LOCALHOST
+  baseURL: process.env.REACT_APP_API_URI
 });
 
 // Thêm một bộ đón chặn request
