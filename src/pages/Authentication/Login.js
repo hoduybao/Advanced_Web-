@@ -111,7 +111,7 @@ function Login() {
   };
 
   const loginGoogle=()=>{
-    window.open("https://bth-classroom.onrender.com/api/auth/google","_self")
+    window.open("http://localhost:8080/api/auth/google","_self")
   }
   
   return (
