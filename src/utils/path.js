@@ -7,7 +7,7 @@ const path = {
     MYHOME: '/home',
     PROFILE:'profile',
     CHANGE_PASSWORD:'change-password',
-
+    DETAILS_CLASS:"/class",
     FORGET_PASSWORD:'forget-password'
 }
 

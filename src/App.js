@@ -14,6 +14,7 @@ import MainContent from "./pages/Home/components/MainContent";
  import { useSelector } from "react-redux";
 import ForgetPassword from "./pages/Authentication/ForgetPassword";
 import ChangePassword from "./pages/LandingPage/ChangePassword";
+import DetailClass from "./pages/Home/components/DetailClass/DetailClass";
 function App() {
   const {isLoggin,mes}=useSelector(state=>state.user);
   return (
@@ -30,7 +31,12 @@ function App() {
           element={isLoggin||mes ? <Home /> : <LandingPage />}
         >
           {isLoggin|| mes ? (
+            <>
             <Route path={path.HOME} element={<MainContent />}></Route>
+            <Route path={path.DETAILS_CLASS} element={<DetailClass />}></Route>
+
+            </>
+            
           ) : (
             <Route path={path.HOME} element={<Content />}></Route>
           )}
