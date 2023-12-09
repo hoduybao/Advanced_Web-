@@ -5,7 +5,7 @@ import { VscLoading } from "react-icons/vsc";
 import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 
-import UserService from "../../utils/api";
+import UserService from "../../utils/api/user";
 import notify from "../../utils/toast";
 import { login } from "../../store/user/userSlice";
 import { useDispatch } from "react-redux";
@@ -86,7 +86,6 @@ function Login() {
           password: signin.password,
         });
 
-        console.log(response);
         if (response.success) {
           setLoading(false);
           dispatch(

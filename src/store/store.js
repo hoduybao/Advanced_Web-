@@ -10,6 +10,8 @@ import {
 import storage from 'redux-persist/lib/storage';
 import { persistStore, persistReducer } from 'redux-persist';
 import userSlice from './user/userSlice';
+import classSlice from './class/classSlice';
+
 const commonConfig={
    key: 'ggclassroom/user',
    storage
@@ -24,7 +26,8 @@ const persistedReducer = persistReducer(userConfig, userSlice);
 
 export const store = configureStore({
   reducer: {
-     user: persistedReducer
+     user: persistedReducer,
+     class: classSlice
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

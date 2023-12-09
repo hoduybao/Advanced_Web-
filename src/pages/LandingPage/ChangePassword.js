@@ -1,5 +1,5 @@
 import { VscLoading } from "react-icons/vsc";
-import UserService from "../../utils/api";
+import UserService from "../../utils/api/user";
 
 import { useState } from "react";
 import Swal from "sweetalert2";
@@ -22,7 +22,6 @@ function ChangePassword() {
   const handleChange = (event) => {
     var { name, value } = event.target;
     setChangePassword((prevInputs) => ({ ...prevInputs, [name]: value }));
-   console.log(name)
     let realName = name;
     if (name === "newPassword") {
       realName = "new password";

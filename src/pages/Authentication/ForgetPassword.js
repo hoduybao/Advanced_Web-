@@ -1,7 +1,7 @@
 import {  useState } from "react";
 import { VscLoading } from "react-icons/vsc";
 
-import UserService from "../../utils/api";
+import UserService from "../../utils/api/user";
 import Swal from "sweetalert2";
 
 function ForgetPassword() {

@@ -2,7 +2,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { VscLoading } from "react-icons/vsc";
 
-import UserService from "../../utils/api";
+import UserService from "../../utils/api/user";
 function Register() {
   const navigate = useNavigate();
 
@@ -75,7 +75,6 @@ function Register() {
           password: signup.password,
         });
 
-        console.log(response);
         if (response.success) {
           setLoading(false);  
           navigate("/auth/login",{ state: { fromRegister: true } });

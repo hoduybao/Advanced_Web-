@@ -8,8 +8,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { getCurrent } from "../store/user/asyncActions";
 import { logout, clearMessage } from "../store/user/userSlice";
 
+import ApiClass from "../utils/api/class";
 import Swal from "sweetalert2";
-import UserService from "../utils/api";
 import { Button, Input, Modal, Popover, Form } from "antd";
 
 const { TextArea } = Input;
@@ -22,14 +22,36 @@ function Header({ currentPage, onSwitchPage }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [openPopover, setOpenPopover] = useState(false);
   const { isLoggin, current, mes } = useSelector((state) => state.user);
-
+  const [loading,setLoading]=useState(false);
   const [openCreateClass, setOpenCreateClass] = useState(false);
   const [openJoinClass, setOpenJoinClass] = useState(false);
 
-  const handleOk = () => {
+  const handleOk = (values) => {
+    const fetch = async () => {
+      setLoading(true);
+      let response = await ApiClass.newClass(`class/create`,values);
+      if (response.success) {
+        navigate(`/class/${response.data.slug}`);
+        setLoading(false);
+      } else {
+        setLoading(false);
+      }
+    };
+    fetch();
     setOpenCreateClass(false);
   };
-  const handleJoinOk = () => {
+  const handleJoinOk = (values) => {
+    const fetch = async () => {
+      setLoading(true);
+      let response = await ApiClass.joinClass(`class/join/${values.classCode}`);
+      if (response.success) {
+        navigate(`/class/${response.data.slug}`);
+        setLoading(false);
+      } else {
+        setLoading(false);
+      }
+    };
+    fetch();
     setOpenJoinClass(false);
   };
 
@@ -105,7 +127,7 @@ function Header({ currentPage, onSwitchPage }) {
   };
 
   return (
-    <div className="flex justify-center w-full h-[56px] bg-[#210035]">
+    <div className="flex justify-center w-full h-[56px] bg-[#210035] fixed z-10">
       <div className="w-main flex justify-between items-center h-full">
         <Link to={`/${path.HOME}`}>
           <img src={logo} alt="logo" className="cursor-pointer w-[58px]" />
@@ -295,7 +317,7 @@ function Header({ currentPage, onSwitchPage }) {
         </div>
       </Modal>
       <Modal
-        title="Create new class"
+        title="Join the class"
         open={openJoinClass}
         footer={null}
         closeIcon={null}
@@ -317,7 +339,7 @@ function Header({ currentPage, onSwitchPage }) {
           >
             <Form.Item
               label="Class code"
-              name="Join the class"
+              name="classCode"
               rules={[
                 {
                   required: true,

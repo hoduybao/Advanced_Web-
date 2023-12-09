@@ -11,41 +11,46 @@ import { Routes, Route } from "react-router-dom";
 import Authentication from "./pages/Authentication/Authentication";
 import LandingPage from "./pages/LandingPage/LandingPage";
 import MainContent from "./pages/Home/components/MainContent";
- import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import ForgetPassword from "./pages/Authentication/ForgetPassword";
 import ChangePassword from "./pages/LandingPage/ChangePassword";
 import DetailClass from "./pages/Home/components/DetailClass/DetailClass";
 function App() {
-  const {isLoggin,mes}=useSelector(state=>state.user);
+  const { isLoggin, mes } = useSelector((state) => state.user);
   return (
     <div className="min-h-screen font-main">
       <Routes>
         <Route path={path.AUTHENTICATION} element={<Authentication />}>
           <Route path={path.LOGIN} element={<Login />}></Route>
           <Route path={path.REGISTER} element={<Register />}></Route>
-          <Route path={path.FORGET_PASSWORD} element={<ForgetPassword />}></Route>
-
+          <Route
+            path={path.FORGET_PASSWORD}
+            element={<ForgetPassword />}
+          ></Route>
         </Route>
         <Route
           path={path.PUBLIC}
-          element={isLoggin||mes ? <Home /> : <LandingPage />}
+          element={isLoggin || mes ? <Home /> : <LandingPage />}
         >
-          {isLoggin|| mes ? (
-            <>
+          {isLoggin || mes ? (
             <Route path={path.HOME} element={<MainContent />}></Route>
-            <Route path={path.DETAILS_CLASS} element={<DetailClass />}></Route>
-
-            </>
-            
           ) : (
             <Route path={path.HOME} element={<Content />}></Route>
           )}
         </Route>
+        <Route path={path.PUBLIC} element={<Home />}>
+          <Route
+            path={path.DETAILS_CLASS + "/:name"}
+            element={<DetailClass />}
+          ></Route>
+        </Route>
 
-        <Route path={path.LandingPage} element={<LandingPage isLogin />}>
+        <Route path={path.PUBLIC} element={<LandingPage />}>
           <Route path={path.PROFILE} element={<Profile />}></Route>
-          <Route path={path.CHANGE_PASSWORD} element={<ChangePassword />}></Route>
-
+          <Route
+            path={path.CHANGE_PASSWORD}
+            element={<ChangePassword />}
+          ></Route>
         </Route>
       </Routes>
     </div>
