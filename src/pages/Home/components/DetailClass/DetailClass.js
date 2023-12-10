@@ -12,6 +12,8 @@ import notify from "../../../../utils/toast";
 import Toast from "../../../../components/Toast";
 import { useSelector } from "react-redux";
 
+
+
 function DetailClass() {
   const [loading, setLoading] = useState(true);
   const [detailsClass, setDetailsClass] = useState(null);
@@ -57,21 +59,21 @@ function DetailClass() {
       if ("clipboard" in navigator) {
         notify("success", "Copied the link class");
         return navigator.clipboard.writeText(
-          "http://localhost:3000/" +
-            "join-class/" +
-            detailsClass.slug +
-            "?code=" +
-            detailsClass.invitationCode
+          process.env.MY_URL_PUBLIC +
+          "join-class/" +
+          detailsClass.slug +
+          "?code=" +
+          detailsClass.invitationCode
         );
       } else {
         return document.execCommand(
           "copy",
           true,
-          "http://localhost:3000/" +
-            "join-class/" +
-            detailsClass.slug +
-            "?code=" +
-            detailsClass.invitationCode
+          process.env.MY_URL_PUBLIC +
+          "join-class/" +
+          detailsClass.slug +
+          "?code=" +
+          detailsClass.invitationCode
         );
       }
     }
@@ -158,32 +160,61 @@ function DetailClass() {
                   </div>
                 </div>
                 <div className="flex gap-6">
-                  <div className="flex gap-6">
-                    <div className="p-4 border rounded-lg w-[190px] flex flex-col gap-2 relative">
-                      <div className="font-normal text-base">Class code</div>
-                      <div className="font-medium text-xl">
-                        {detailsClass?.invitationCode}
+                  <div className="w-[190px] flex flex-col gap-6">
+                    {checkIsTeacher() && (
+                      <div className="p-4 border rounded-lg w-[190px] flex flex-col gap-2 relative">
+                        <div className="font-normal text-base">Class code</div>
+                        <div className="font-medium text-xl">
+                          {detailsClass?.invitationCode}
+                        </div>
+                        <Dropdown
+                          trigger={["click"]}
+                          menu={{
+                            items,
+                          }}
+                          placement="bottomLeft"
+                          arrow={{
+                            pointAtCenter: true,
+                          }}
+                        >
+                          <Button
+                            shape="circle"
+                            className="absolute right-3 top-3 text-xl text-black !border-none hover:bg-gray-300 hover:text-black"
+                            icon={
+                              <CiMenuKebab width={30} height={30} color="black" />
+                            }
+                          ></Button>
+                        </Dropdown>
                       </div>
-                      <Dropdown
-                        trigger={["click"]}
-                        menu={{
-                          items,
-                        }}
-                        placement="bottomLeft"
-                        arrow={{
-                          pointAtCenter: true,
-                        }}
-                      >
+                    )}
+
+                    <div className="p-4 border rounded-lg flex flex-col gap-2 relative">
+                      <div className="font-normal text-base">Grade Structure</div>
+                      <div className="font-medium text-xl">
+                        <p className="text-sm mb-2 text-green">There is no grade structure yet</p>
+                      </div>
+                      {checkIsTeacher() && (
                         <Button
                           shape="circle"
-                          className="absolute right-3 top-3 text-xl text-black !border-none hover:bg-gray-300 hover:text-black"
-                          icon={
-                            <CiMenuKebab width={30} height={30} color="black" />
-                          }
-                        ></Button>
-                      </Dropdown>
+                          className="absolute right-3 top-3 text-xl text-black !border-none hover:bg-gray-300 hover:text-black">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                          </svg>
+                        </Button>
+                      )}
                     </div>
                   </div>
+                  <div className="flex-grow">
+                    <div className="relative bg-white p-4 rounded-md shadow-md border">
+                      <div className="bg-white-500 text-black py-2 px-4 rounded-t-md -ml-4 flex flex-row items-center justify-between">
+                        <div className="mb-4 flex-grow">
+                          <input type="text" className="border rounded-md p-2 w-full" placeholder="Announce something to your class..." />
+                        </div>
+                        <button className="bg-blue-500 text-white px-4 py-2 rounded-md ml-4 -mt-4">Post</button>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             )}
@@ -213,11 +244,10 @@ function DetailClass() {
                 <div className="px-2">
                   {detailsClass?.teacherList.map((element, index) => (
                     <div
-                      className={`flex gap-4 items-center py-4 ${
-                        index === detailsClass.teacherList.length - 1
-                          ? "border-none"
-                          : "border-x-0 border-t-0 border"
-                      }`}
+                      className={`flex gap-4 items-center py-4 ${index === detailsClass.teacherList.length - 1
+                        ? "border-none"
+                        : "border-x-0 border-t-0 border"
+                        }`}
                     >
                       <img
                         class="h-10 w-10 rounded-full"
@@ -250,11 +280,10 @@ function DetailClass() {
                 <div className="px-2">
                   {detailsClass?.studentList.map((element, index) => (
                     <div
-                      className={`flex gap-4 items-center  py-4 ${
-                        index === detailsClass.teacherList.length - 1
-                          ? "border-none"
-                          : "border-x-0 border-t-0 border"
-                      }`}
+                      className={`flex gap-4 items-center  py-4 ${index === detailsClass.teacherList.length - 1
+                        ? "border-none"
+                        : "border-x-0 border-t-0 border"
+                        }`}
                     >
                       <img
                         class="h-10 w-10 rounded-full"
