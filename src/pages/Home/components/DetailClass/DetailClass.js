@@ -59,7 +59,7 @@ function DetailClass() {
       if ("clipboard" in navigator) {
         notify("success", "Copied the link class");
         return navigator.clipboard.writeText(
-          process.env.MY_URL_PUBLIC +
+          "https://myclassroomhcmus.netlify.app/" +
           "join-class/" +
           detailsClass.slug +
           "?code=" +
@@ -69,7 +69,7 @@ function DetailClass() {
         return document.execCommand(
           "copy",
           true,
-          process.env.MY_URL_PUBLIC +
+          "https://myclassroomhcmus.netlify.app/" +
           "join-class/" +
           detailsClass.slug +
           "?code=" +
