@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import ForgetPassword from "./pages/Authentication/ForgetPassword";
 import ChangePassword from "./pages/LandingPage/ChangePassword";
 import DetailClass from "./pages/Home/components/DetailClass/DetailClass";
+import JoinClassByLink from "./pages/Home/components/JoinClassByLink/JoinClassByLink";
 function App() {
   const { isLoggin, mes } = useSelector((state) => state.user);
   return (
@@ -42,6 +43,10 @@ function App() {
           <Route
             path={path.DETAILS_CLASS + "/:name"}
             element={<DetailClass />}
+          ></Route>
+          <Route
+            path={path.JOIN_CLASS_BY_LINK + "/:name"}
+            element={<JoinClassByLink />}
           ></Route>
         </Route>
 

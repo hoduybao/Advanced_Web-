@@ -56,36 +56,47 @@ function DetailClass() {
     } else {
       if ("clipboard" in navigator) {
         notify("success", "Copied the link class");
-        return navigator.clipboard.writeText(window.location.href);
+        return navigator.clipboard.writeText(
+          "http://localhost:3000/" +
+            "join-class/" +
+            detailsClass.slug +
+            "?code=" +
+            detailsClass.invitationCode
+        );
       } else {
-        return document.execCommand("copy", true, window.location.href);
+        return document.execCommand(
+          "copy",
+          true,
+          "http://localhost:3000/" +
+            "join-class/" +
+            detailsClass.slug +
+            "?code=" +
+            detailsClass.invitationCode
+        );
       }
     }
   };
 
   const handleInvite = (values) => {
     const fetch = async () => {
-      setLoading(true);
       let response = await ApiClass.invitePeople(`class/invite`, {
         email: values.email,
         slug: detailsClass.slug,
-        role: typeInvite
+        role: typeInvite,
       });
       if (response.success) {
-
         setOpenInvite(false);
-        setLoading(false);
-
       } else {
-        setOpenInvite(false);
-        setLoading(false);
+        notify("error", "This person has been added to the class!");
       }
     };
     fetch();
   };
   const checkIsTeacher = () => {
-    return !(detailsClass.teacherList.some((element) => element._id === current._id));
-  }
+    return detailsClass.teacherList.some(
+      (element) => element._id === current._id
+    );
+  };
   const items = [
     {
       key: "1",
@@ -173,7 +184,6 @@ function DetailClass() {
                       </Dropdown>
                     </div>
                   </div>
-
                 </div>
               </div>
             )}
@@ -189,58 +199,85 @@ function DetailClass() {
               <div className="w-3/5 mt-10">
                 <div className="flex justify-between  items-center pb-2 border-x-0 border-t-0 border border-black px-2 ">
                   <div className="text-[30px] font-normal ">Teacher</div>
-                  {checkIsTeacher && <IoPersonAdd
-                    size={25}
-                    className="cursor-pointer hover:text-blue-500"
-                    onClick={() => {
-                      setTypeInvite("teacher");
-                      setOpenInvite(true);
-                    }}
-                  />}
+                  {checkIsTeacher() && (
+                    <IoPersonAdd
+                      size={25}
+                      className="cursor-pointer hover:text-blue-500"
+                      onClick={() => {
+                        setTypeInvite("teacher");
+                        setOpenInvite(true);
+                      }}
+                    />
+                  )}
                 </div>
-
-                {detailsClass?.teacherList.map((element, index) => (
-                  <div
-                    className={`flex gap-4 items-center py-4 ${index === detailsClass.teacherList.length - 1
-                      ? "border-none"
-                      : "border-x-0 border-t-0 border"
+                <div className="px-2">
+                  {detailsClass?.teacherList.map((element, index) => (
+                    <div
+                      className={`flex gap-4 items-center py-4 ${
+                        index === detailsClass.teacherList.length - 1
+                          ? "border-none"
+                          : "border-x-0 border-t-0 border"
                       }`}
-                  >
-                    <img
-                      class="h-10 w-10 rounded-full"
-                      src={element.avatar}
-                      alt=""
-                    />
-                    <div className="text-sm font-medium">
-                      {element.fullname}
+                    >
+                      <img
+                        class="h-10 w-10 rounded-full"
+                        src={element.avatar}
+                        alt=""
+                      />
+                      <div className="text-sm font-medium">
+                        {element.fullname}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
 
-                <div className=" border-x-0 border-t-0 border border-black pb-2 mt-10 flex items-center justify-between">
+                <div className=" border-x-0 border-t-0 border border-black pb-2 mt-10 flex items-center justify-between px-2">
                   <div className="text-[30px] font-normal">Student</div>
-                  <div className="text-sm font-medium">
-                    {detailsClass?.studentList.length} students
+                  <div className="text-sm font-medium flex flex-end items-end gap-4">
+                    <div> {detailsClass?.studentList.length} students</div>
+                    {checkIsTeacher() && (
+                      <IoPersonAdd
+                        size={25}
+                        className="cursor-pointer hover:text-blue-500"
+                        onClick={() => {
+                          setTypeInvite("student");
+                          setOpenInvite(true);
+                        }}
+                      />
+                    )}
                   </div>
                 </div>
-                {detailsClass?.studentList.map((element, index) => (
-                  <div className="flex gap-4 items-center border-x-0 border-t-0 border  py-4">
-                    <img
-                      class="h-10 w-10 rounded-full"
-                      src={element.avatar}
-                      alt=""
-                    />
-                    <div className="text-sm font-medium">
-                      {element.fullname}
+                <div className="px-2">
+                  {detailsClass?.studentList.map((element, index) => (
+                    <div
+                      className={`flex gap-4 items-center  py-4 ${
+                        index === detailsClass.teacherList.length - 1
+                          ? "border-none"
+                          : "border-x-0 border-t-0 border"
+                      }`}
+                    >
+                      <img
+                        class="h-10 w-10 rounded-full"
+                        src={element.avatar}
+                        alt=""
+                      />
+                      <div className="text-sm font-medium">
+                        {element.fullname}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
           </div>
         </TabPane>
       </Tabs>
-      <Modal title={`Invite ${typeInvite}`} open={openInvite} footer={null} closeIcon={null}>
+      <Modal
+        title={`Invite ${typeInvite}`}
+        open={openInvite}
+        footer={null}
+        closeIcon={null}
+      >
         <div className="pr-6">
           <Form
             name="invite"

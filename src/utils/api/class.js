@@ -20,6 +20,10 @@ class ClassService {
         const response = await axios.post(path);
         return response;
     };
+    joinClassByLink= async (path) => {
+        const response = await axios.post(path);
+        return response;
+    };
     invitePeople= async (path,options = {}) => {
         const response = await axios.post(path,options);
         return response;
