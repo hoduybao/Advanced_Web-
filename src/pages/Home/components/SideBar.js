@@ -5,14 +5,16 @@ import { Link } from "react-router-dom";
 
 function SideBar() {
 
-    
+
     const { myclass } = useSelector((state) => state.class);
-    const [isOpen, setIsOpen] = useState(false);
-
-    const handleClick = () => {
-        setIsOpen(!isOpen);
+    const [isOpenTeaching, setIsOpenTeaching] = useState(false);
+    const [isOpenRegister, setIsOpenRegister] = useState(false);
+    const handleClickTeaching = () => {
+        setIsOpenTeaching(!isOpenTeaching);
     };
-
+    const handleClickRegister = () => {
+        setIsOpenRegister(!isOpenRegister);
+    };
 
 
     return (
@@ -42,25 +44,62 @@ function SideBar() {
                                 className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                                 aria-controls="dropdown-example"
                                 data-collapse-toggle="dropdown-example"
-                                onClick={() => handleClick()}>
-                                <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 20">
-                                    <path d="M16 14V2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v15a3 3 0 0 0 3 3h12a1 1 0 0 0 0-2h-1v-2a2 2 0 0 0 2-2ZM4 2h2v12H4V2Zm8 16H3a1 1 0 0 1 0-2h9v2Z" />
+                                onClick={() => handleClickTeaching()}>
+                                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 17V2a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a2 2 0 0 0-2 2Zm0 0a2 2 0 0 0 2 2h12M5 15V1m8 18v-4" />
                                 </svg>
-                                <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">My courses</span>
+                                <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Teaching</span>
                                 <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
                                 </svg>
                             </button>
-                            {isOpen && (
+                            {isOpenTeaching && (
                                 <ul id="dropdown-example" className="py-2 space-y-2">
-                                {myclass.map((element,index)=>(
-                                    <li>
-                                        <Link key={index} to="/class" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">{element.title}</Link>
-                                    </li>
-                                ))}
-                                    
-                                    
-                                </ul>)}
+                                    {myclass.map((element, index) => (
+                                        element.role === "teacher" && (
+                                            <li key={index}>
+                                                <Link
+                                                    to={`/class/${element.slug}`}
+                                                    className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 text-sm"
+                                                >
+                                                    {element.title}
+                                                </Link>
+                                            </li>
+                                        )
+                                    ))}
+                                </ul>
+                            )}
+                        </li>
+                        <li>
+                            <button type="button"
+                                className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                                aria-controls="dropdown-example"
+                                data-collapse-toggle="dropdown-example"
+                                onClick={() => handleClickRegister()}>
+                                <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 20">
+                                    <path d="M16 14V2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v15a3 3 0 0 0 3 3h12a1 1 0 0 0 0-2h-1v-2a2 2 0 0 0 2-2ZM4 2h2v12H4V2Zm8 16H3a1 1 0 0 1 0-2h9v2Z" />
+                                </svg>
+                                <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Registered</span>
+                                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                                </svg>
+                            </button>
+                            {isOpenRegister && (
+                                <ul id="dropdown-example" className="py-2 space-y-2">
+                                    {myclass.map((element, index) => (
+                                        element.role === "student" && (
+                                            <li key={index}>
+                                                <Link
+                                                    to={`/class/${element.slug}`}
+                                                    className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 text-sm"
+                                                >
+                                                    {element.title}
+                                                </Link>
+                                            </li>
+                                        )
+                                    ))}
+                                </ul>
+                            )}
                         </li>
                         <li>
                             <a href="/" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">

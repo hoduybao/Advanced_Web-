@@ -19,7 +19,7 @@ function DetailClass() {
   const [typeInvite, setTypeInvite] = useState("");
 
   const navigate = useNavigate();
-  const { isLoggin ,current} = useSelector((state) => state.user);
+  const { isLoggin, current } = useSelector((state) => state.user);
   const params = useParams();
 
   const slug = params.name;
@@ -66,15 +66,15 @@ function DetailClass() {
   const handleInvite = (values) => {
     const fetch = async () => {
       setLoading(true);
-      let response = await ApiClass.invitePeople(`class/invite`,{
+      let response = await ApiClass.invitePeople(`class/invite`, {
         email: values.email,
         slug: detailsClass.slug,
-        role:typeInvite
+        role: typeInvite
       });
       if (response.success) {
-        
-       setOpenInvite(false);
-       setLoading(false);
+
+        setOpenInvite(false);
+        setLoading(false);
 
       } else {
         setOpenInvite(false);
@@ -83,8 +83,8 @@ function DetailClass() {
     };
     fetch();
   };
-  const checkIsTeacher=()=>{
-   return !(detailsClass.teacherList.some((element)=>element._id===current._id));
+  const checkIsTeacher = () => {
+    return !(detailsClass.teacherList.some((element) => element._id === current._id));
   }
   const items = [
     {
@@ -173,7 +173,7 @@ function DetailClass() {
                       </Dropdown>
                     </div>
                   </div>
-                  <div></div>
+
                 </div>
               </div>
             )}
@@ -189,23 +189,22 @@ function DetailClass() {
               <div className="w-3/5 mt-10">
                 <div className="flex justify-between  items-center pb-2 border-x-0 border-t-0 border border-black px-2 ">
                   <div className="text-[30px] font-normal ">Teacher</div>
-                 {checkIsTeacher&&<IoPersonAdd
+                  {checkIsTeacher && <IoPersonAdd
                     size={25}
                     className="cursor-pointer hover:text-blue-500"
                     onClick={() => {
                       setTypeInvite("teacher");
                       setOpenInvite(true);
                     }}
-                  />} 
+                  />}
                 </div>
 
                 {detailsClass?.teacherList.map((element, index) => (
                   <div
-                    className={`flex gap-4 items-center py-4 ${
-                      index === detailsClass.teacherList.length - 1
-                        ? "border-none"
-                        : "border-x-0 border-t-0 border"
-                    }`}
+                    className={`flex gap-4 items-center py-4 ${index === detailsClass.teacherList.length - 1
+                      ? "border-none"
+                      : "border-x-0 border-t-0 border"
+                      }`}
                   >
                     <img
                       class="h-10 w-10 rounded-full"
