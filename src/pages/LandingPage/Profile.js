@@ -19,12 +19,12 @@ function Profile() {
   const convertDate = (time) => {
     var due = new Date(time);
     return due.toISOString().split('T')[0];
-};
+  };
 
   useEffect(() => {
     // Kiểm tra xem current có giá trị hay không
     if (current) {
-      setProfile({ ...current, dateofbirth:current.dateofbirth? convertDate(current.dateofbirth):current.dateofbirth });
+      setProfile({ ...current, dateofbirth: current.dateofbirth ? convertDate(current.dateofbirth) : current.dateofbirth });
     }
   }, [current]);
 
@@ -63,6 +63,9 @@ function Profile() {
       if (profile.address) {
         formdata.append("address", profile.address);
       }
+      if (profile.IDStudent) {
+        formdata.append("IDStudent", profile.IDStudent);
+      }
 
       if (profile.dateofbirth) {
         formdata.append("dateofbirth", profile.dateofbirth);
@@ -77,16 +80,16 @@ function Profile() {
             setLoading(false);
             setAvatar(null);
             Swal.fire("Congratulation!", "Update successfully", "success");
-         
+
           })
           .catch((error) => {
             setLoading(false);
             setAvatar(null);
             Swal.fire("Opps!", "Update failed", "error");
-         
+
           });
 
-      
+
       };
       fetch();
     }
@@ -160,6 +163,16 @@ function Profile() {
             <input
               name="address"
               value={profile?.address}
+              onChange={handleChange}
+              type="text"
+              className="px-2 border rounded outline-none shadow  text-gray-600 h-9 w-[40%] focus:border-blue-300"
+            />
+          </div>
+          <div className="flex gap-3 items-center">
+            <label className="w-[30%] text-right">IDStudent :</label>
+            <input
+              name="IDStudent"
+              value={profile?.IDStudent}
               onChange={handleChange}
               type="text"
               className="px-2 border rounded outline-none shadow  text-gray-600 h-9 w-[40%] focus:border-blue-300"
