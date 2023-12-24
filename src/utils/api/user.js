@@ -20,7 +20,6 @@ class UserService {
     };
     updateUser=async (path,options = {})=>{
         const response = await axios.put(path,options);
-        console.log(response)
         return response;
     }
     forgetPassword=async (path,options = {})=>{
