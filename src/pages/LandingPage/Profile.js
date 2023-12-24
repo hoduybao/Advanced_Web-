@@ -169,7 +169,7 @@ function Profile() {
             />
           </div>
           <div className="flex gap-3 items-center">
-            <label className="w-[30%] text-right">IDStudent :</label>
+            <label className="w-[30%] text-right">ID Student :</label>
             <input
               name="IDStudent"
               value={profile?.IDStudent}

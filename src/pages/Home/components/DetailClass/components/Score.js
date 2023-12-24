@@ -1,85 +1,130 @@
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Form, Input, InputNumber, Modal, Space, Table } from "antd";
-import { useState } from "react";
+import {
+  MinusCircleOutlined,
+  PlusOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
+import { Button, Form, Input, Modal, Result, Space, Spin, Table } from "antd";
+import { useEffect, useState } from "react";
 import ApiClass from "../../../../../utils/api/class";
 
 function Score({ detailsClass }) {
-  const columns = [
-    {
-      title: "ID",
-      dataIndex: "ID",
-      key: "ID",
-    },
-    {
-      title: "Name",
-      dataIndex: "Name",
-      key: "Name",
-    },
-    {
-      title: "Process",
-      dataIndex: "Process",
-      key: "Process",
-    },
-    {
-      title: "Midterm",
-      dataIndex: "Midterm",
-      key: "Midterm",
-    },
-    {
-      title: "Final",
-      dataIndex: "Final",
-      key: "Final",
-    },
-    {
-      title: "GPA",
-      key: "GPA",
-      dataIndex: "GPA",
-    },
-  ];
-  const data = [
-    {
-      key: "1",
-      ID: "20120433",
-      Name: "Duy Bao",
-      Process: 5.0,
-      Midterm: 9.0,
-      Final: 8.5,
-      GPA: 8.0,
-    },
-    {
-      key: "2",
-      ID: "20120376",
-      Name: "Duy That",
-      Process: 5.0,
-      Midterm: 9.0,
-      Final: 8.5,
-      GPA: 8.0,
-    },
-    {
-      key: "3",
-      ID: "20120420",
-      Name: "Duy Quang",
-      Process: 5.0,
-      Midterm: 9.0,
-      Final: 8.5,
-      GPA: 8.0,
-    },
-  ];
-
+  const [columns, setColumns] = useState([]);
   const [openGradeStructure, setOpenGradeStructure] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [allPoint, setAllPoints] = useState({});
+  const [dataTable, setDataTable] = useState([]);
+  const handleChangeUploadGrade = (event) => {
+    const { name } = event.target;
+    const file = event.target.files[0];
 
-  const handleGradeStructure = (values) => {
+    const typeGrade = detailsClass.gradeStructure.find(
+      (element) => element.title === name
+    );
+    const idTypeGrade = typeGrade._id;
+    var formdata = new FormData();
+    formdata.append("file", file);
 
     const fetch = async () => {
       setIsLoading(true);
-      let response = await ApiClass.createGradeStructure(`class/gradeStructure/${detailsClass.slug}`,values.gradeStructure);
+      let response = await ApiClass.createGradeStructure(
+        `grade/upload-grades/${detailsClass.slug}/${idTypeGrade}`,
+        formdata
+      );
+      setIsLoading(false);
+    };
+    fetch();
+  };
+
+  const handleGradeStructure = (values) => {
+    const fetch = async () => {
+      setIsLoading(true);
+      let response = await ApiClass.createGradeStructure(
+        `class/gradeStructure/${detailsClass.slug}`,
+        values.gradeStructure
+      );
 
       setIsLoading(false);
     };
     fetch();
     setOpenGradeStructure(false);
   };
+
+  const getAllPoints = async () => {
+    setIsLoading(true);
+    let response = await ApiClass.getAllPointClass(
+      `grade/getAllPoint/${detailsClass.slug}`
+    );
+    setColumns((prev) => {
+      let newColums = [
+        {
+          title: "ID",
+          dataIndex: "id",
+          key: "id",
+        },
+        {
+          title: "Name",
+          dataIndex: "name",
+          key: "name",
+        },
+      ];
+      for (let i = 0; i < response.data?.gradeStructure?.length; i++) {
+        newColums.push({
+          title: (
+            <Space className="flex justify-between">
+              {response?.data.gradeStructure[i].title}
+              <input
+                id="upload"
+                type="file"
+                accept=".csv"
+                onChange={() => handleChangeUploadGrade}
+                hidden
+                name={response?.data.gradeStructure[i].title}
+              />
+              <label for="upload">
+                <UploadOutlined />
+              </label>
+            </Space>
+          ),
+          dataIndex: response?.data.gradeStructure[i].title,
+          key: response?.data.gradeStructure[i].title,
+        });
+      }
+      newColums.push({
+        title: "GPA",
+        dataIndex: "GPA",
+        key: "GPA",
+      });
+
+      return newColums;
+    });
+
+    setDataTable((prev) => {
+      let dataTable = [];
+      if (response.data?.studentGrades) {
+        for (let i = 0; i < response.data?.studentGrades?.length; i++) {
+          var dataPoint = {};
+          for (let i = 0; i < response.data?.studentGrades.grades.length; i++) {
+            dataPoint[response.data?.studentGrades.grades[i].columnName] =
+              dataPoint[response.data?.studentGrades.grades[i].point];
+          }
+          dataTable.push({
+            id: response.data?.studentGrades[i].dataStudent.IDStudent,
+            name: response.data?.studentGrades[i].dataStudent.fullname,
+            ...dataPoint,
+            GPA: response.data?.studentGrades.averagePoint,
+          });
+        }
+      }
+
+      return dataTable;
+    });
+
+    setAllPoints(response.data);
+    setIsLoading(false);
+  };
+  useEffect(() => {
+    getAllPoints();
+  }, []);
 
   return (
     <div className="w-full flex justify-center min-h-screen relative">
@@ -92,13 +137,19 @@ function Score({ detailsClass }) {
             Grade Structure
           </Button>
         </div>
-        <Table
-          columns={columns}
-          dataSource={data}
-          pagination={{
-            position: ["bottomCenter"],
-          }}
-        />
+        {isLoading ? (
+          <div className="absolute top-1/2 left-1/2">
+            <Spin />
+          </div>
+        ) : (
+          <Table
+            columns={columns}
+            dataSource={dataTable}
+            pagination={{
+              position: ["bottomCenter"],
+            }}
+          />
+        )}
       </div>
       <Modal open={openGradeStructure} footer={null} closeIcon={null}>
         <div className="pr-2">
@@ -120,8 +171,7 @@ function Score({ detailsClass }) {
 
             <Form.List
               name="gradeStructure"
-               initialValue={detailsClass.gradeStructure}
-            
+              initialValue={detailsClass.gradeStructure}
             >
               {(fields, { add, remove }) => (
                 <>

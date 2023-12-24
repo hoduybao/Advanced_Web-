@@ -8,7 +8,6 @@ class ClassService {
         return response;
     };
     getDetailClass =async (path)=>{
-        console.log(path)
         const response = await axios.get(path);
         return response;
     };
@@ -30,6 +29,10 @@ class ClassService {
     };
     createGradeStructure =  async (path,options = []) => {
         const response = await axios.post(path,options);
+        return response;
+    };
+    getAllPointClass  =async (path)=>{
+        const response = await axios.get(path);
         return response;
     };
 }
