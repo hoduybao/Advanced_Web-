@@ -28,6 +28,10 @@ class ClassService {
         const response = await axios.post(path,options);
         return response;
     };
+    createGradeStructure =  async (path,options = []) => {
+        const response = await axios.post(path,options);
+        return response;
+    };
 }
 const ApiClass=new ClassService();
 export default ApiClass;
