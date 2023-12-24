@@ -103,9 +103,9 @@ function Score({ detailsClass }) {
       if (response.data?.studentGrades) {
         for (let i = 0; i < response.data?.studentGrades?.length; i++) {
           var dataPoint = {};
-          for (let i = 0; i < response.data?.studentGrades.grades.length; i++) {
-            dataPoint[response.data?.studentGrades.grades[i].columnName] =
-              dataPoint[response.data?.studentGrades.grades[i].point];
+          for (let j = 0; j < response.data?.studentGrades[i].grades.length; j++) {
+            dataPoint[response.data?.studentGrades.grades[j].columnName] =
+              dataPoint[response.data?.studentGrades.grades[j].point];
           }
           dataTable.push({
             id: response.data?.studentGrades[i].dataStudent.IDStudent,
