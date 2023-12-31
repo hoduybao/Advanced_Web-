@@ -36,3 +36,6 @@ code {
 .ant-tabs-tab {
   padding: 10px 20px !important;
 }
+.ant-collapse-expand-icon{
+  display: none !important;
+}

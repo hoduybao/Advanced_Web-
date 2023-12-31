@@ -38,7 +38,11 @@ class ClassService {
     upLoadGrade =async (path,options = {})=>{
         const response = await axios.post(path,options);
         return response;
-    }
+    };
+    finalizeGrade=async (path)=>{
+        const response = await axios.put(path);
+        return response;
+    };
 }
 const ApiClass=new ClassService();
 export default ApiClass;
