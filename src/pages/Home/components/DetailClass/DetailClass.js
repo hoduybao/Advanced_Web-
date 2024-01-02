@@ -24,6 +24,7 @@ import { useSelector } from "react-redux";
 import { EditOutlined } from "@ant-design/icons";
 import Score from "./components/Score";
 import TextArea from "antd/es/input/TextArea";
+import Review from "./components/Review";
 
 function DetailClass() {
   const [loading, setLoading] = useState(true);
@@ -343,86 +344,7 @@ function DetailClass() {
         </TabPane>
         {detailsClass && checkIsTeacher() && (
           <TabPane key="4" tab="Review">
-            <div className="w-full flex justify-center min-h-screen relative">
-              <div className="w-[70%] mt-10 flex flex-col gap-6">
-                {" "}
-                <Space direction="vertical">
-                  <Collapse
-                    collapsible="header"
-                    defaultActiveKey={["1"]}
-                    items={[
-                      {
-                        key: "1",
-                        label: (
-                          <div className="flex flex-col">
-                            <div className="flex gap-2 font-medium text-base">
-                              <div>Hồ Duy Bảo</div>
-                              <div>-</div>
-                              <div>20120433</div>
-                            </div>
-                            <div className="text-gray-500 text-[15px]">Review the midterm score column</div>
-                          </div>
-                        ),
-                        children: <div className="flex justify-center"><Form
-            name="reviewResult"
-            labelCol={{
-              span: 24,
-            }}
-            wrapperCol={{
-              span: 24,
-            }}
-            style={{
-              maxWidth: 600,
-            }}
-            autoComplete="off"
-            className="w-full"
-          >
-            <Form.Item label="Title" name="title">
-              <Input disabled />
-            </Form.Item>
-            <Form.Item label="Current score" name="oldPoint">
-              <Input disabled />
-            </Form.Item>
-            <Form.Item
-              label="Desired score"
-              name="expectedPoint"
-             
-            >
-              <Input disabled />
-            </Form.Item>
-            <Form.Item
-              label="Reason"
-             
-              name="studentExplanation"
-            >
-              <TextArea rows={4} disabled />
-            </Form.Item>
-
-            <Form.Item
-              wrapperCol={{
-                span: 24,
-              }}
-            >
-              <div className="flex justify-end gap-3">
-                <Button >
-                  Cancel
-                </Button>
-                <Button
-                  type="primary"
-                  className="!bg-[#1677FF]"
-                  htmlType="submit"
-                >
-                  Send
-                </Button>
-              </div>
-            </Form.Item>
-          </Form></div> ,
-                      },
-                    ]}
-                  />
-                </Space>
-              </div>
-            </div>
+          <Review slug={detailsClass.slug}/>
           </TabPane>
         )}
       </Tabs>
