@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import ApiClass from "../../../../../utils/api/class";
 import { CiMenuKebab } from "react-icons/ci";
 import { MdOutlinePublic, MdOutlineRateReview } from "react-icons/md";
+import { TiLocationArrowOutline } from "react-icons/ti";
 
 import Papa from "papaparse";
 import { useSelector } from "react-redux";
@@ -25,11 +26,10 @@ function Score({ detailsClass }) {
   const [myPoint, setMyPoints] = useState({});
   const [dataTable, setDataTable] = useState([]);
 
-  const [dataModalReview,setDataModalReview]=useState({});
+  const [dataModalReview, setDataModalReview] = useState({});
   const { current } = useSelector((state) => state.user);
 
-  const [form]=Form.useForm();
-
+  const [form] = Form.useForm();
 
   const handleChangeUploadGrade = (event) => {
     const { name } = event.target;
@@ -116,22 +116,68 @@ function Score({ detailsClass }) {
     fetch();
     setOpenGradeStructure(false);
   };
-  const handleSendReviewResult = (values) => {
-    const fetch = async () => {
-       await ApiStudent.sendReviewResult(
-        `grade-review/post-grade-review/`,
-        {
-          "_idgradestructure": dataModalReview._idgradestructure,
-          "oldPoint": values.oldPoint,
-          "expectedPoint": values.expectedPoint,
-          "studentExplanation": values.studentExplanation
-      }
-      );
+  const handleSendReviewResult = async (values) => {
+    if (values.idReview) {
+      let response = await ApiClass.postComment(`grade-review/comment`, {
+        reviewId: values.idReview,
+        content: values.content,
+      });
+      setDataModalReview({
+        _idgradestructure: response.data._id,
+        data: response.data,
+      });
+      form.setFieldValue('content','');
 
-    };
-    fetch();
+    } else {
+      await ApiStudent.sendReviewResult(`grade-review/post-grade-review/`, {
+        _idgradestructure: dataModalReview._idgradestructure,
+        oldPoint: values.oldPoint,
+        expectedPoint: values.expectedPoint,
+        studentExplanation: values.studentExplanation,
+      });
+    }
   };
-  
+
+  const handleOpenModalReview = async (i) => {
+    if (!openReviewResult) setOpenReviewResult(true);
+
+    if (myPoint?.studentGrades[0].grades[i].IDReview) {
+          
+      let response = await ApiStudent.getDetailReview(
+        `grade-review/detail/${myPoint?.studentGrades[0].grades[i].IDReview}`
+      );
+      console.log(response.data.oldPoint)
+      form.setFieldValue(
+        "title",
+        myPoint?.studentGrades[0].grades[i].columnName
+      );
+      form.setFieldValue("oldPoint", response.data.oldPoint);
+      form.setFieldValue(
+        "studentExplanation",
+        response.data.studentExplanation
+      );
+      form.setFieldValue("expectedPoint", response.data.expectedPoint);
+      form.setFieldValue("idReview", response.data._id);
+
+      setDataModalReview({
+        _idgradestructure: myPoint?.studentGrades[0].grades[i]._id,
+        data: response.data,
+      });
+
+    } else {
+      form.setFieldValue(
+        "title",
+        myPoint?.studentGrades[0].grades[i].columnName
+      );
+      form.setFieldValue(
+        "oldPoint",
+        myPoint?.studentGrades[0].grades[i].oldPoint
+      );
+      setDataModalReview({
+        _idgradestructure: myPoint?.studentGrades[0].grades[i]._id,
+      });
+    }
+  };
 
   const handleFinalizeScore = (id) => {
     const fetch = async () => {
@@ -323,13 +369,7 @@ function Score({ detailsClass }) {
                 label: (
                   <div
                     className="text-sm flex gap-2 items-center"
-                    onClick={() => {
-                      form.setFieldValue('title',myPoint?.studentGrades[0].grades[i].columnName);
-                      form.setFieldValue('oldPoint',myPoint?.studentGrades[0].grades[i].point)
-                      setDataModalReview({
-                        _idgradestructure: myPoint?.studentGrades[0].grades[i]._id,
-                      })
-                      setOpenReviewResult(true)}}
+                    onClick={() => handleOpenModalReview(i)}
                   >
                     <div>
                       <MdOutlineRateReview />
@@ -343,28 +383,30 @@ function Score({ detailsClass }) {
               title: (
                 <Space className="flex justify-between">
                   {myPoint?.studentGrades[0].grades[i].columnName}
-                  
-                {myPoint?.studentGrades[0].grades[i].isFinalized &&<Dropdown
-                    trigger={["click"]}
-                    menu={{
-                      items,
-                    }}
-                    placement="bottomLeft"
-                    arrow={{
-                      pointAtCenter: true,
-                    }}
-                  >
-                    <Button
-                      shape="circle"
-                      className="absolute right-3 top-3 text-xl text-black !border-none hover:bg-gray-300 hover:text-black"
-                      icon={
-                        <CiMenuKebab width={30} height={30} color="black" />
-                      }
-                    ></Button>
-                  </Dropdown>}  
+
+                  {myPoint?.studentGrades[0].grades[i].isFinalized && (
+                    <Dropdown
+                      trigger={["click"]}
+                      menu={{
+                        items,
+                      }}
+                      placement="bottomLeft"
+                      arrow={{
+                        pointAtCenter: true,
+                      }}
+                    >
+                      <Button
+                        shape="circle"
+                        className="absolute right-3 top-3 text-xl text-black !border-none hover:bg-gray-300 hover:text-black"
+                        icon={
+                          <CiMenuKebab width={30} height={30} color="black" />
+                        }
+                      ></Button>
+                    </Dropdown>
+                  )}
                 </Space>
               ),
-              dataIndex:myPoint?.studentGrades[0].grades[i].columnName,
+              dataIndex: myPoint?.studentGrades[0].grades[i].columnName,
               key: myPoint?.studentGrades[0].grades[i].columnName,
             });
           }
@@ -425,19 +467,18 @@ function Score({ detailsClass }) {
             </Button>
           </div>
         )}
-        {isLoading ? (
-          <div className="absolute top-1/2 left-1/2">
-            <Spin />
-          </div>
-        ) : (
-          <Table
-            columns={columns}
-            dataSource={dataTable}
-            pagination={{
-              position: ["bottomCenter"],
-            }}
-          />
-        )}
+
+        <Spin spinning={isLoading}>
+          {!isLoading && (
+            <Table
+              columns={columns}
+              dataSource={dataTable}
+              pagination={{
+                position: ["bottomCenter"],
+              }}
+            />
+          )}
+        </Spin>
       </div>
       <Modal open={openGradeStructure} footer={null} closeIcon={null}>
         <div className="pr-2">
@@ -546,75 +587,126 @@ function Score({ detailsClass }) {
         </div>
       </Modal>
       <Modal open={openReviewResult} footer={null} closeIcon={null}>
-        <div className="pr-2">
-          <Form
-          form={form}
-            name="reviewResult"
-            labelCol={{
-              span: 24,
-            }}
-            wrapperCol={{
-              span: 24,
-            }}
-            style={{
-              maxWidth: 600,
-            }}
-            onFinish={handleSendReviewResult}
-            autoComplete="off"
-          >
-            <div className="text-lg mb-5 font-medium">Review result</div>
-            <Form.Item label="Title" name="title">
-              <Input disabled value={dataModalReview.title} />
-            </Form.Item>
-            <Form.Item label="Current score" name="oldPoint">
-              <Input disabled />
-            </Form.Item>
-            <Form.Item
-              label="Desired score"
-              name="expectedPoint"
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter your desired score!",
-                },
-              ]}
-            >
-              <Input type="number" placeholder="Enter your desired score"  />
-            </Form.Item>
-            <Form.Item
-              label="Reason"
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter your reason!",
-                },
-              ]}
-              name="studentExplanation"
-            >
-              <TextArea rows={4} placeholder="Enter your reason"  />
-            </Form.Item>
+        <Spin spinning={isLoading}>
+          <div className="pr-4 !max-h-[600px] overflow-y-auto">
+           
+              <Form
+                form={form}
+                name="reviewResult"
+                labelCol={{
+                  span: 24,
+                }}
+                wrapperCol={{
+                  span: 24,
+                }}
+                style={{
+                  maxWidth: 600,
+                }}
+                onFinish={handleSendReviewResult}
+                autoComplete="off"
+              >
+                <div className="text-lg mb-5 font-medium">Review result</div>
 
-            <Form.Item
-              wrapperCol={{
-                span: 24,
-              }}
-            >
-              <div className="flex justify-end gap-3">
-                <Button onClick={() => setOpenReviewResult(false)}>
-                  Cancel
-                </Button>
-                <Button
-                  type="primary"
-                  className="!bg-[#1677FF]"
-                  htmlType="submit"
-                  loading={isLoading}
+                <Form.Item label="ID Review" name="idReview" className="hidden">
+                  <Input disabled className="!text-gray-600" />
+                </Form.Item>
+                <Form.Item label="Title" name="title">
+                  <Input disabled className="!text-gray-600" />
+                </Form.Item>
+                <Form.Item label="Current score" name="oldPoint">
+                  <Input disabled className="!text-gray-600" />
+                </Form.Item>
+                <Form.Item
+                  label="Desired score"
+                  name="expectedPoint"
+                  rules={[
+                    {
+                      required: !dataModalReview?.data,
+                      message: "Please enter your desired score!",
+                    },
+                  ]}
                 >
-                  Send
-                </Button>
-              </div>
-            </Form.Item>
-          </Form>
-        </div>
+                  <Input
+                    type="number"
+                    className="!text-gray-600"
+                    placeholder="Enter your desired score"
+                    disabled={dataModalReview?.data}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label="Reason"
+                  rules={[
+                    {
+                      required: !dataModalReview?.data,
+                      message: "Please enter your reason!",
+                    },
+                  ]}
+                  name="studentExplanation"
+                >
+                  <TextArea
+                    rows={4}
+                    placeholder="Enter your reason"
+                    className="!text-gray-600"
+                    disabled={dataModalReview?.data}
+                  />
+                </Form.Item>
+
+                <div className="font-medium mb-3">Comments</div>
+                {dataModalReview?.data?.comments &&
+                  dataModalReview.data.comments.map((element, index) => (
+                    <div className="flex items-start flex-col mb-3" key={index}>
+                      <div className="font-medium">
+                        {element.authorDetails.fullname}
+                      </div>
+                      <div>{element.content}</div>
+                    </div>
+                  ))}
+
+                <div className="flex items-center justify-between mb-5">
+                  <Form.Item name={`content`} className="!w-[95%]">
+                    <TextArea rows={2} />
+                  </Form.Item>
+                  <Form.Item>
+                    <Button
+                      htmlType="submit"
+                      className="!border-none shadow-none"
+                    >
+                      <TiLocationArrowOutline size={30} />
+                    </Button>
+                  </Form.Item>
+                </div>
+
+                <Form.Item
+                  wrapperCol={{
+                    span: 24,
+                  }}
+                >
+                  {!dataModalReview?.data ? (
+                    <div className="flex justify-end gap-3">
+                      <Button onClick={() => setOpenReviewResult(false)}>
+                        Cancel
+                      </Button>
+                      <Button
+                        type="primary"
+                        className="!bg-[#1677FF]"
+                        htmlType="submit"
+                        loading={isLoading}
+                      >
+                        Send
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex justify-center gap-3">
+                      <Button onClick={() => setOpenReviewResult(false)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  )}
+                </Form.Item>
+              </Form>
+           
+          </div>
+        </Spin>
       </Modal>
     </div>
   );
