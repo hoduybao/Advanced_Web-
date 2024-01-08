@@ -35,7 +35,8 @@ function DetailClass() {
   const navigate = useNavigate();
   const { isLoggin, current } = useSelector((state) => state.user);
   const params = useParams();
-
+  const urlParams = new URLSearchParams(window.location.search);
+  console.log(urlParams.get("tab"));
   const slug = params.name;
 
   useEffect(() => {
@@ -141,11 +142,13 @@ function DetailClass() {
       <Toast />
 
       <Tabs
-        defaultActiveKey="1"
+        activeKey={urlParams.get("tab")||'1'}
         indicatorSize={(origin) => origin + 20}
         className="w-full text-black"
+        // eslint-disable-next-line no-undef
+        onChange={(key) => {navigate(`/class/${slug}?tab=${key}`)}}
       >
-        <TabPane key="1" className="text-black" tab="News">
+        <TabPane key="1" tab="News" >
           <div className="w-full flex justify-center min-h-screen relative">
             {loading ? (
               <div className="absolute top-1/2 left-1/2">
@@ -280,6 +283,7 @@ function DetailClass() {
                 <div className="px-2">
                   {detailsClass?.teacherList.map((element, index) => (
                     <div
+                    key={index}
                       className={`flex gap-4 items-center py-4 ${
                         index === detailsClass.teacherList.length - 1
                           ? "border-none"
@@ -317,6 +321,7 @@ function DetailClass() {
                 <div className="px-2">
                   {detailsClass?.studentList.map((element, index) => (
                     <div
+                    key={index}
                       className={`flex gap-4 items-center  py-4 ${
                         index === detailsClass.teacherList.length - 1
                           ? "border-none"

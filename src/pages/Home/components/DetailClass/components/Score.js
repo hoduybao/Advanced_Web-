@@ -10,7 +10,8 @@ import ApiClass from "../../../../../utils/api/class";
 import { CiMenuKebab } from "react-icons/ci";
 import { MdOutlinePublic, MdOutlineRateReview } from "react-icons/md";
 import { TiLocationArrowOutline } from "react-icons/ti";
-
+import notify from "../../../../../utils/toast";
+import Toast from "../../../../../components/Toast";
 import Papa from "papaparse";
 import { useSelector } from "react-redux";
 import ApiStudent from "../../../../../utils/api/student";
@@ -30,6 +31,7 @@ function Score({ detailsClass }) {
   const { current } = useSelector((state) => state.user);
 
   const [form] = Form.useForm();
+  const [formGradeStruct] = Form.useForm();
 
   const handleChangeUploadGrade = (event) => {
     const { name } = event.target;
@@ -48,6 +50,8 @@ function Score({ detailsClass }) {
         `grade/upload-grades/${detailsClass.slug}/${idTypeGrade}`,
         formdata
       ).then((response) => {
+        notify("success", "Upload score successfully!");
+
         getAllPoints();
       });
     };
@@ -110,11 +114,12 @@ function Score({ detailsClass }) {
         `class/gradeStructure/${detailsClass.slug}`,
         values.gradeStructure
       );
-
-      setIsLoading(false);
+      getAllPoints();
+      notify("success", "Create grade structure successfully!");
     };
     fetch();
     setOpenGradeStructure(false);
+
   };
   const handleSendReviewResult = async (values) => {
     if (values.idReview) {
@@ -134,7 +139,10 @@ function Score({ detailsClass }) {
         oldPoint: values.oldPoint,
         expectedPoint: values.expectedPoint,
         studentExplanation: values.studentExplanation,
+      }).then((response) => {
+        notify("success", "Send grade review successfully!");
       });
+      
     }
   };
 
@@ -183,7 +191,9 @@ function Score({ detailsClass }) {
     const fetch = async () => {
       let response = await ApiClass.finalizeGrade(
         `class/finalize-grade/${detailsClass.slug}/${id}`
-      );
+      ).then(()=>{
+        notify("success", "Finalizes grade successfully!");
+      });
     };
     fetch();
   };
@@ -193,7 +203,6 @@ function Score({ detailsClass }) {
       `grade/getAllPoint/${detailsClass.slug}`
     );
     setAllPoints(response.data);
-
     setIsLoading(false);
   };
   const getMyPoint = async () => {
@@ -211,180 +220,85 @@ function Score({ detailsClass }) {
     );
   };
   useEffect(() => {
-    if (checkIsTeacher()) {
-      if (Object.keys(allPoint).length === 0) {
-        getAllPoints();
-      } else {
-        setColumns((prev) => {
-          let newColums = [
-            {
-              title: "ID",
-              dataIndex: "ID",
-              key: "ID",
-            },
-            {
-              title: "Name",
-              dataIndex: "Name",
-              key: "Name",
-            },
-          ];
-          for (let i = 0; i < allPoint?.gradeStructure?.length; i++) {
-            const items = [
+    if(detailsClass)
+    {
+      if (checkIsTeacher()) {
+        if (Object.keys(allPoint).length === 0) {
+          getAllPoints();
+        } else {
+          setColumns((prev) => {
+            let newColums = [
               {
-                key: 1,
-                label: (
-                  <div className="text-sm flex gap-2 items-center">
-                    <input
-                      id={allPoint.gradeStructure[i].title}
-                      type="file"
-                      accept=".csv"
-                      onChange={handleChangeUploadGrade}
-                      hidden
-                      name={allPoint.gradeStructure[i].title}
-                    />
-                    <label for={allPoint.gradeStructure[i].title}>
-                      <UploadOutlined />
-                    </label>
-                    <label for={allPoint.gradeStructure[i].title}>
-                      Upload score
-                    </label>
-                  </div>
-                ),
+                title: "ID",
+                dataIndex: "ID",
+                key: "ID",
               },
               {
-                key: 2,
-                label: (
-                  <div
-                    className="text-sm flex gap-2 items-center"
-                    onClick={() =>
-                      handleExportScore(allPoint.gradeStructure[i].title)
-                    }
-                  >
-                    <div>
-                      <DownloadOutlined />
-                    </div>
-                    <div>Export score</div>
-                  </div>
-                ),
-              },
-              {
-                key: 3,
-                label: (
-                  <div
-                    className="text-sm flex gap-2 items-center"
-                    onClick={() =>
-                      handleFinalizeScore(allPoint.gradeStructure[i]._id)
-                    }
-                  >
-                    <div>
-                      <MdOutlinePublic />
-                    </div>
-                    <div>Public score</div>
-                  </div>
-                ),
+                title: "Name",
+                dataIndex: "Name",
+                key: "Name",
               },
             ];
-            newColums.push({
-              title: (
-                <Space className="flex justify-between">
-                  {allPoint.gradeStructure[i].title}
-                  <Dropdown
-                    trigger={["click"]}
-                    menu={{
-                      items,
-                    }}
-                    placement="bottomLeft"
-                    arrow={{
-                      pointAtCenter: true,
-                    }}
-                  >
-                    <Button
-                      shape="circle"
-                      className="absolute right-3 top-3 text-xl text-black !border-none hover:bg-gray-300 hover:text-black"
-                      icon={
-                        <CiMenuKebab width={30} height={30} color="black" />
+            for (let i = 0; i < allPoint?.gradeStructure?.length; i++) {
+              const items = [
+                {
+                  key: 1,
+                  label: (
+                    <div className="text-sm flex gap-2 items-center">
+                      <input
+                        id={allPoint.gradeStructure[i].title}
+                        type="file"
+                        accept=".csv"
+                        onChange={handleChangeUploadGrade}
+                        hidden
+                        name={allPoint.gradeStructure[i].title}
+                      />
+                      <label for={allPoint.gradeStructure[i].title}>
+                        <UploadOutlined />
+                      </label>
+                      <label for={allPoint.gradeStructure[i].title}>
+                        Upload score
+                      </label>
+                    </div>
+                  ),
+                },
+                {
+                  key: 2,
+                  label: (
+                    <div
+                      className="text-sm flex gap-2 items-center"
+                      onClick={() =>
+                        handleExportScore(allPoint.gradeStructure[i].title)
                       }
-                    ></Button>
-                  </Dropdown>
-                </Space>
-              ),
-              dataIndex: allPoint.gradeStructure[i].title,
-              key: allPoint.gradeStructure[i].title,
-            });
-          }
-          newColums.push({
-            title: "GPA",
-            dataIndex: "GPA",
-            key: "GPA",
-          });
-
-          return newColums;
-        });
-        setDataTable((prev) => {
-          let dataTable = [];
-          if (allPoint?.studentGrades) {
-            for (let i = 0; i < allPoint?.studentGrades?.length; i++) {
-              var dataPoint = {};
-              for (
-                let j = 0;
-                j < allPoint?.studentGrades[i].grades.length;
-                j++
-              ) {
-                dataPoint[allPoint?.studentGrades[i].grades[j].columnName] =
-                  allPoint?.studentGrades[i].grades[j].point;
-              }
-              dataTable.push({
-                ID: allPoint?.studentGrades[i].dataStudent.IDStudent,
-                Name: allPoint?.studentGrades[i].dataStudent.fullname,
-                ...dataPoint,
-                GPA: allPoint?.studentGrades[i].averagePoint,
-              });
-            }
-          }
-
-          return dataTable;
-        });
-      }
-    } else {
-      if (Object.keys(myPoint).length === 0) {
-        getMyPoint();
-      } else {
-        setColumns((prev) => {
-          let newColums = [
-            {
-              title: "ID",
-              dataIndex: "ID",
-              key: "ID",
-            },
-            {
-              title: "Name",
-              dataIndex: "Name",
-              key: "Name",
-            },
-          ];
-          for (let i = 0; i < myPoint?.studentGrades[0].grades?.length; i++) {
-            const items = [
-              {
-                key: 1,
-                label: (
-                  <div
-                    className="text-sm flex gap-2 items-center"
-                    onClick={() => handleOpenModalReview(i)}
-                  >
-                    <div>
-                      <MdOutlineRateReview />
+                    >
+                      <div>
+                        <DownloadOutlined />
+                      </div>
+                      <div>Export score</div>
                     </div>
-                    <div>Review result</div>
-                  </div>
-                ),
-              },
-            ];
-            newColums.push({
-              title: (
-                <Space className="flex justify-between">
-                  {myPoint?.studentGrades[0].grades[i].columnName}
-
-                  {myPoint?.studentGrades[0].grades[i].isFinalized && (
+                  ),
+                },
+                {
+                  key: 3,
+                  label: (
+                    <div
+                      className="text-sm flex gap-2 items-center"
+                      onClick={() =>
+                        handleFinalizeScore(allPoint.gradeStructure[i]._id)
+                      }
+                    >
+                      <div>
+                        <MdOutlinePublic />
+                      </div>
+                      <div>Public score</div>
+                    </div>
+                  ),
+                },
+              ];
+              newColums.push({
+                title: (
+                  <Space className="flex justify-between">
+                    {allPoint.gradeStructure[i].title}
                     <Dropdown
                       trigger={["click"]}
                       menu={{
@@ -403,55 +317,162 @@ function Score({ detailsClass }) {
                         }
                       ></Button>
                     </Dropdown>
-                  )}
-                </Space>
-              ),
-              dataIndex: myPoint?.studentGrades[0].grades[i].columnName,
-              key: myPoint?.studentGrades[0].grades[i].columnName,
-            });
-          }
-          newColums.push({
-            title: "GPA",
-            dataIndex: "GPA",
-            key: "GPA",
-          });
-
-          return newColums;
-        });
-        setDataTable((prev) => {
-          let dataTable = [];
-          if (myPoint?.studentGrades) {
-            for (let i = 0; i < myPoint?.studentGrades?.length; i++) {
-              var dataPoint = {};
-              for (
-                let j = 0;
-                j < myPoint?.studentGrades[i].grades.length;
-                j++
-              ) {
-                dataPoint[myPoint?.studentGrades[i].grades[j].columnName] =
-                  myPoint?.studentGrades[i].grades[j].isFinalized
-                    ? myPoint?.studentGrades[i].grades[j].point
-                    : "-";
-              }
-              dataTable.push({
-                ID: myPoint?.studentGrades[i].dataStudent.IDStudent,
-                Name: myPoint?.studentGrades[i].dataStudent.fullname,
-                ...dataPoint,
-                GPA: myPoint?.studentGrades[i].averagePoint,
+                  </Space>
+                ),
+                dataIndex: allPoint.gradeStructure[i].title,
+                key: allPoint.gradeStructure[i].title,
               });
             }
-          }
-
-          return dataTable;
-        });
+            newColums.push({
+              title: "GPA",
+              dataIndex: "GPA",
+              key: "GPA",
+            });
+  
+            return newColums;
+          });
+          setDataTable((prev) => {
+            let dataTable = [];
+            if (allPoint?.studentGrades) {
+              for (let i = 0; i < allPoint?.studentGrades?.length; i++) {
+                var dataPoint = {};
+                for (
+                  let j = 0;
+                  j < allPoint?.studentGrades[i].grades.length;
+                  j++
+                ) {
+                  dataPoint[allPoint?.studentGrades[i].grades[j].columnName] =
+                    allPoint?.studentGrades[i].grades[j].point;
+                }
+                dataTable.push({
+                  ID: allPoint?.studentGrades[i].dataStudent.IDStudent,
+                  Name: allPoint?.studentGrades[i].dataStudent.fullname,
+                  ...dataPoint,
+                  GPA: allPoint?.studentGrades[i].averagePoint,
+                });
+              }
+            }
+  
+            return dataTable;
+          });
+        }
+      } else {
+        if (Object.keys(myPoint).length === 0) {
+          getMyPoint();
+        } else {
+          setColumns((prev) => {
+            let newColums = [
+              {
+                title: "ID",
+                dataIndex: "ID",
+                key: "ID",
+              },
+              {
+                title: "Name",
+                dataIndex: "Name",
+                key: "Name",
+              },
+            ];
+            for (let i = 0; i < myPoint?.studentGrades[0].grades?.length; i++) {
+              const items = [
+                {
+                  key: 1,
+                  label: (
+                    <div
+                      className="text-sm flex gap-2 items-center"
+                      onClick={() => handleOpenModalReview(i)}
+                    >
+                      <div>
+                        <MdOutlineRateReview />
+                      </div>
+                      <div>Review result</div>
+                    </div>
+                  ),
+                },
+              ];
+              newColums.push({
+                title: (
+                  <Space className="flex justify-between">
+                    {myPoint?.studentGrades[0].grades[i].columnName}
+  
+                    {myPoint?.studentGrades[0].grades[i].isFinalized && (
+                      <Dropdown
+                        trigger={["click"]}
+                        menu={{
+                          items,
+                        }}
+                        placement="bottomLeft"
+                        arrow={{
+                          pointAtCenter: true,
+                        }}
+                      >
+                        <Button
+                          shape="circle"
+                          className="absolute right-3 top-3 text-xl text-black !border-none hover:bg-gray-300 hover:text-black"
+                          icon={
+                            <CiMenuKebab width={30} height={30} color="black" />
+                          }
+                        ></Button>
+                      </Dropdown>
+                    )}
+                  </Space>
+                ),
+                dataIndex: myPoint?.studentGrades[0].grades[i].columnName,
+                key: myPoint?.studentGrades[0].grades[i].columnName,
+              });
+            }
+            newColums.push({
+              title: "GPA",
+              dataIndex: "GPA",
+              key: "GPA",
+            });
+  
+            return newColums;
+          });
+          setDataTable((prev) => {
+            let dataTable = [];
+            if (myPoint?.studentGrades) {
+              for (let i = 0; i < myPoint?.studentGrades?.length; i++) {
+                var dataPoint = {};
+                for (
+                  let j = 0;
+                  j < myPoint?.studentGrades[i].grades.length;
+                  j++
+                ) {
+                  dataPoint[myPoint?.studentGrades[i].grades[j].columnName] =
+                    myPoint?.studentGrades[i].grades[j].isFinalized
+                      ? myPoint?.studentGrades[i].grades[j].point
+                      : "-";
+                }
+                dataTable.push({
+                  ID: myPoint?.studentGrades[i].dataStudent.IDStudent,
+                  Name: myPoint?.studentGrades[i].dataStudent.fullname,
+                  ...dataPoint,
+                  GPA: myPoint?.studentGrades[i].averagePoint,
+                });
+              }
+            }
+  
+            return dataTable;
+          });
+        }
       }
     }
-  }, [allPoint, myPoint]);
+   
+  }, [allPoint, myPoint,detailsClass]);
+
+  useEffect(()=>{
+  if(detailsClass){
+    formGradeStruct.setFieldValue('gradeStructure',detailsClass?.gradeStructure)
+  }
+  },[detailsClass])
 
   return (
     <div className="w-full flex justify-center min-h-screen relative">
+          <Toast />
+
       <div className="mt-10 mx-4 w-full">
-        {checkIsTeacher() && (
+        {detailsClass && checkIsTeacher() && (
           <div className="flex justify-end mb-4 gap-3">
             <Button
               className="border-[#355ED4] text-[#355ED4] text-base font-medium h-9"
@@ -469,7 +490,7 @@ function Score({ detailsClass }) {
         )}
 
         <Spin spinning={isLoading}>
-          {!isLoading && (
+          
             <Table
               columns={columns}
               dataSource={dataTable}
@@ -477,12 +498,13 @@ function Score({ detailsClass }) {
                 position: ["bottomCenter"],
               }}
             />
-          )}
+         
         </Spin>
       </div>
       <Modal open={openGradeStructure} footer={null} closeIcon={null}>
         <div className="pr-2">
           <Form
+          form={formGradeStruct}
             name="gradeStructure"
             labelCol={{
               span: 24,
@@ -500,7 +522,6 @@ function Score({ detailsClass }) {
 
             <Form.List
               name="gradeStructure"
-              initialValue={detailsClass.gradeStructure}
             >
               {(fields, { add, remove }) => (
                 <>

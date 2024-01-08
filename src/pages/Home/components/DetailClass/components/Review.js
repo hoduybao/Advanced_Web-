@@ -33,7 +33,6 @@ function Review({ slug }) {
                 return (
                   <Collapse
                     key={element._id}
-                    defaultActiveKey={[element._id]}
                     collapsible="header"
                     items={[
                       {
