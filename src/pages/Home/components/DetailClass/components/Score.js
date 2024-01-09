@@ -57,6 +57,65 @@ function Score({ detailsClass }) {
     };
     fetch();
   };
+
+  const handleDownloadListStudent = () => {
+    const scoreBoard = [];
+    for (let i = 0; i < allPoint.studentGrades?.length; i++) {
+      scoreBoard.push({
+        StudentId: allPoint.studentGrades[i].dataStudent.IDStudent,
+        FullName: allPoint.studentGrades[i].dataStudent.fullname
+      });
+    }
+    const csv = "\uFEFF" + Papa.unparse(scoreBoard, {
+      header: false,
+      quotes: true,
+    });
+
+    // Tạo một Blob từ chuỗi CSV
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+
+    // Tạo một đường dẫn URL cho Blob
+    const url = URL.createObjectURL(blob);
+
+    // Tạo một thẻ a để tạo và tải tệp CSV
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ListStudent_${detailsClass.title}.csv`;
+    a.click();
+
+    // Giải phóng URL đối tượng
+    URL.revokeObjectURL(url);
+  };
+
+
+  const handleExportTemplateScore = () => {
+    const scoreBoard = [];
+    for (let i = 0; i < allPoint.studentGrades?.length; i++) {
+      scoreBoard.push({
+        StudentId: allPoint.studentGrades[i].dataStudent.IDStudent,
+      });
+    }
+    const csv = "\uFEFF" + Papa.unparse(scoreBoard, {
+      header: false,
+      quotes: true,
+    });
+
+    // Tạo một Blob từ chuỗi CSV
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+
+    // Tạo một đường dẫn URL cho Blob
+    const url = URL.createObjectURL(blob);
+
+    // Tạo một thẻ a để tạo và tải tệp CSV
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Template_Score_${detailsClass.title}.csv`;
+    a.click();
+
+    // Giải phóng URL đối tượng
+    URL.revokeObjectURL(url);
+  };
+
   const handleExportScore = (name) => {
     const scoreBoard = [];
     for (let i = 0; i < allPoint.studentGrades?.length; i++) {
@@ -89,7 +148,7 @@ function Score({ detailsClass }) {
   };
 
   const handleExportGradeBoard = () => {
-    const csv = Papa.unparse(dataTable);
+    const csv = "\uFEFF" + Papa.unparse(dataTable);
 
     // Tạo một Blob từ chuỗi CSV
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -100,7 +159,7 @@ function Score({ detailsClass }) {
     // Tạo một thẻ a để tạo và tải tệp CSV
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${detailsClass.title}.csv`;
+    a.download = `GradeBoard_${detailsClass.title}.csv`;
     a.click();
 
     // Giải phóng URL đối tượng
@@ -131,7 +190,7 @@ function Score({ detailsClass }) {
         _idgradestructure: response.data._id,
         data: response.data,
       });
-      form.setFieldValue('content','');
+      form.setFieldValue('content', '');
 
     } else {
       await ApiStudent.sendReviewResult(`grade-review/post-grade-review/`, {
@@ -142,7 +201,7 @@ function Score({ detailsClass }) {
       }).then((response) => {
         notify("success", "Send grade review successfully!");
       });
-      
+
     }
   };
 
@@ -150,7 +209,7 @@ function Score({ detailsClass }) {
     if (!openReviewResult) setOpenReviewResult(true);
 
     if (myPoint?.studentGrades[0].grades[i].IDReview) {
-          
+
       let response = await ApiStudent.getDetailReview(
         `grade-review/detail/${myPoint?.studentGrades[0].grades[i].IDReview}`
       );
@@ -191,7 +250,7 @@ function Score({ detailsClass }) {
     const fetch = async () => {
       let response = await ApiClass.finalizeGrade(
         `class/finalize-grade/${detailsClass.slug}/${id}`
-      ).then(()=>{
+      ).then(() => {
         notify("success", "Finalizes grade successfully!");
       });
     };
@@ -220,8 +279,7 @@ function Score({ detailsClass }) {
     );
   };
   useEffect(() => {
-    if(detailsClass)
-    {
+    if (detailsClass) {
       if (checkIsTeacher()) {
         if (Object.keys(allPoint).length === 0) {
           getAllPoints();
@@ -328,7 +386,7 @@ function Score({ detailsClass }) {
               dataIndex: "GPA",
               key: "GPA",
             });
-  
+
             return newColums;
           });
           setDataTable((prev) => {
@@ -352,7 +410,7 @@ function Score({ detailsClass }) {
                 });
               }
             }
-  
+
             return dataTable;
           });
         }
@@ -394,7 +452,7 @@ function Score({ detailsClass }) {
                 title: (
                   <Space className="flex justify-between">
                     {myPoint?.studentGrades[0].grades[i].columnName}
-  
+
                     {myPoint?.studentGrades[0].grades[i].isFinalized && (
                       <Dropdown
                         trigger={["click"]}
@@ -426,7 +484,7 @@ function Score({ detailsClass }) {
               dataIndex: "GPA",
               key: "GPA",
             });
-  
+
             return newColums;
           });
           setDataTable((prev) => {
@@ -452,28 +510,40 @@ function Score({ detailsClass }) {
                 });
               }
             }
-  
+
             return dataTable;
           });
         }
       }
     }
-   
-  }, [allPoint, myPoint,detailsClass]);
 
-  useEffect(()=>{
-  if(detailsClass){
-    formGradeStruct.setFieldValue('gradeStructure',detailsClass?.gradeStructure)
-  }
-  },[detailsClass])
+  }, [allPoint, myPoint, detailsClass]);
+
+  useEffect(() => {
+    if (detailsClass) {
+      formGradeStruct.setFieldValue('gradeStructure', detailsClass?.gradeStructure)
+    }
+  }, [detailsClass])
 
   return (
     <div className="w-full flex justify-center min-h-screen relative">
-          <Toast />
+      <Toast />
 
       <div className="mt-10 mx-4 w-full">
         {detailsClass && checkIsTeacher() && (
           <div className="flex justify-end mb-4 gap-3">
+            <Button
+              className="border-[#355ED4] text-[#355ED4] text-base font-medium h-9"
+              onClick={handleDownloadListStudent}
+            >
+              Download List Student
+            </Button>
+            <Button
+              className="border-[#355ED4] text-[#355ED4] text-base font-medium h-9"
+              onClick={handleExportTemplateScore}
+            >
+              Download Template Score
+            </Button>
             <Button
               className="border-[#355ED4] text-[#355ED4] text-base font-medium h-9"
               onClick={handleExportGradeBoard}
@@ -490,21 +560,21 @@ function Score({ detailsClass }) {
         )}
 
         <Spin spinning={isLoading}>
-          
-            <Table
-              columns={columns}
-              dataSource={dataTable}
-              pagination={{
-                position: ["bottomCenter"],
-              }}
-            />
-         
+
+          <Table
+            columns={columns}
+            dataSource={dataTable}
+            pagination={{
+              position: ["bottomCenter"],
+            }}
+          />
+
         </Spin>
       </div>
       <Modal open={openGradeStructure} footer={null} closeIcon={null}>
         <div className="pr-2">
           <Form
-          form={formGradeStruct}
+            form={formGradeStruct}
             name="gradeStructure"
             labelCol={{
               span: 24,
@@ -610,122 +680,122 @@ function Score({ detailsClass }) {
       <Modal open={openReviewResult} footer={null} closeIcon={null}>
         <Spin spinning={isLoading}>
           <div className="pr-4 !max-h-[600px] overflow-y-auto">
-           
-              <Form
-                form={form}
-                name="reviewResult"
-                labelCol={{
-                  span: 24,
-                }}
+
+            <Form
+              form={form}
+              name="reviewResult"
+              labelCol={{
+                span: 24,
+              }}
+              wrapperCol={{
+                span: 24,
+              }}
+              style={{
+                maxWidth: 600,
+              }}
+              onFinish={handleSendReviewResult}
+              autoComplete="off"
+            >
+              <div className="text-lg mb-5 font-medium">Review result</div>
+
+              <Form.Item label="ID Review" name="idReview" className="hidden">
+                <Input disabled className="!text-gray-600" />
+              </Form.Item>
+              <Form.Item label="Title" name="title">
+                <Input disabled className="!text-gray-600" />
+              </Form.Item>
+              <Form.Item label="Current score" name="oldPoint">
+                <Input disabled className="!text-gray-600" />
+              </Form.Item>
+              <Form.Item
+                label="Desired score"
+                name="expectedPoint"
+                rules={[
+                  {
+                    required: !dataModalReview?.data,
+                    message: "Please enter your desired score!",
+                  },
+                ]}
+              >
+                <Input
+                  type="number"
+                  className="!text-gray-600"
+                  placeholder="Enter your desired score"
+                  disabled={dataModalReview?.data}
+                />
+              </Form.Item>
+              <Form.Item
+                label="Reason"
+                rules={[
+                  {
+                    required: !dataModalReview?.data,
+                    message: "Please enter your reason!",
+                  },
+                ]}
+                name="studentExplanation"
+              >
+                <TextArea
+                  rows={4}
+                  placeholder="Enter your reason"
+                  className="!text-gray-600"
+                  disabled={dataModalReview?.data}
+                />
+              </Form.Item>
+
+              <div className="font-medium mb-3">Comments</div>
+              {dataModalReview?.data?.comments &&
+                dataModalReview.data.comments.map((element, index) => (
+                  <div className="flex items-start flex-col mb-3" key={index}>
+                    <div className="font-medium">
+                      {element.authorDetails.fullname}
+                    </div>
+                    <div>{element.content}</div>
+                  </div>
+                ))}
+
+              <div className="flex items-center justify-between mb-5">
+                <Form.Item name={`content`} className="!w-[95%]">
+                  <TextArea rows={2} />
+                </Form.Item>
+                <Form.Item>
+                  <Button
+                    htmlType="submit"
+                    className="!border-none shadow-none"
+                  >
+                    <TiLocationArrowOutline size={30} />
+                  </Button>
+                </Form.Item>
+              </div>
+
+              <Form.Item
                 wrapperCol={{
                   span: 24,
                 }}
-                style={{
-                  maxWidth: 600,
-                }}
-                onFinish={handleSendReviewResult}
-                autoComplete="off"
               >
-                <div className="text-lg mb-5 font-medium">Review result</div>
-
-                <Form.Item label="ID Review" name="idReview" className="hidden">
-                  <Input disabled className="!text-gray-600" />
-                </Form.Item>
-                <Form.Item label="Title" name="title">
-                  <Input disabled className="!text-gray-600" />
-                </Form.Item>
-                <Form.Item label="Current score" name="oldPoint">
-                  <Input disabled className="!text-gray-600" />
-                </Form.Item>
-                <Form.Item
-                  label="Desired score"
-                  name="expectedPoint"
-                  rules={[
-                    {
-                      required: !dataModalReview?.data,
-                      message: "Please enter your desired score!",
-                    },
-                  ]}
-                >
-                  <Input
-                    type="number"
-                    className="!text-gray-600"
-                    placeholder="Enter your desired score"
-                    disabled={dataModalReview?.data}
-                  />
-                </Form.Item>
-                <Form.Item
-                  label="Reason"
-                  rules={[
-                    {
-                      required: !dataModalReview?.data,
-                      message: "Please enter your reason!",
-                    },
-                  ]}
-                  name="studentExplanation"
-                >
-                  <TextArea
-                    rows={4}
-                    placeholder="Enter your reason"
-                    className="!text-gray-600"
-                    disabled={dataModalReview?.data}
-                  />
-                </Form.Item>
-
-                <div className="font-medium mb-3">Comments</div>
-                {dataModalReview?.data?.comments &&
-                  dataModalReview.data.comments.map((element, index) => (
-                    <div className="flex items-start flex-col mb-3" key={index}>
-                      <div className="font-medium">
-                        {element.authorDetails.fullname}
-                      </div>
-                      <div>{element.content}</div>
-                    </div>
-                  ))}
-
-                <div className="flex items-center justify-between mb-5">
-                  <Form.Item name={`content`} className="!w-[95%]">
-                    <TextArea rows={2} />
-                  </Form.Item>
-                  <Form.Item>
-                    <Button
-                      htmlType="submit"
-                      className="!border-none shadow-none"
-                    >
-                      <TiLocationArrowOutline size={30} />
+                {!dataModalReview?.data ? (
+                  <div className="flex justify-end gap-3">
+                    <Button onClick={() => setOpenReviewResult(false)}>
+                      Cancel
                     </Button>
-                  </Form.Item>
-                </div>
+                    <Button
+                      type="primary"
+                      className="!bg-[#1677FF]"
+                      htmlType="submit"
+                      loading={isLoading}
+                    >
+                      Send
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex justify-center gap-3">
+                    <Button onClick={() => setOpenReviewResult(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                )}
+              </Form.Item>
+            </Form>
 
-                <Form.Item
-                  wrapperCol={{
-                    span: 24,
-                  }}
-                >
-                  {!dataModalReview?.data ? (
-                    <div className="flex justify-end gap-3">
-                      <Button onClick={() => setOpenReviewResult(false)}>
-                        Cancel
-                      </Button>
-                      <Button
-                        type="primary"
-                        className="!bg-[#1677FF]"
-                        htmlType="submit"
-                        loading={isLoading}
-                      >
-                        Send
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="flex justify-center gap-3">
-                      <Button onClick={() => setOpenReviewResult(false)}>
-                        Cancel
-                      </Button>
-                    </div>
-                  )}
-                </Form.Item>
-              </Form>
-           
           </div>
         </Spin>
       </Modal>
