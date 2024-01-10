@@ -11,6 +11,7 @@ import { logout, clearMessage } from "../store/user/userSlice";
 import ApiClass from "../utils/api/class";
 import Swal from "sweetalert2";
 import { Button, Input, Modal, Popover, Form } from "antd";
+import { io } from "socket.io-client"
 
 const { TextArea } = Input;
 
@@ -22,14 +23,37 @@ function Header({ currentPage, onSwitchPage }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [openPopover, setOpenPopover] = useState(false);
   const { isLoggin, current, mes } = useSelector((state) => state.user);
-  const [loading,setLoading]=useState(false);
+  const [loading, setLoading] = useState(false);
   const [openCreateClass, setOpenCreateClass] = useState(false);
   const [openJoinClass, setOpenJoinClass] = useState(false);
+
+
+  const getAllNotify = async () => {
+    let response = await ApiClass.getAllNotify(
+      `notification/getAllNotify`
+    );
+    console.log(response)
+  };
+
+
+  useEffect(() => {
+    const socket = io('http://localhost:5000/');
+    socket.on("newNotify", (data) => {
+      if (data.success) {
+        getAllNotify();
+      }
+    });
+
+    return () => {
+      console.log("Disconnecting from Socket.IO server");
+      socket.disconnect();
+    };
+  }, []);
 
   const handleOk = (values) => {
     const fetch = async () => {
       setLoading(true);
-      let response = await ApiClass.newClass(`class/create`,values);
+      let response = await ApiClass.newClass(`class/create`, values);
       if (response.success) {
         navigate(`/class/${response.data.slug}`);
         setLoading(false);
