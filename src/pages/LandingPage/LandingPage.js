@@ -8,7 +8,7 @@ const LandingPage = () => {
         <div className="w-full flex flex-col items-center">
             <Header />
     
-            <div className="w-full bg-white">
+            <div className="w-full bg-white mt-[56px]">
                 <Outlet />
             </div>
         </div>
