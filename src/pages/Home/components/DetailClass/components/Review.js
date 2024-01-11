@@ -3,6 +3,7 @@ import TextArea from "antd/es/input/TextArea";
 import { useEffect, useRef, useState } from "react";
 import { TiLocationArrowOutline } from "react-icons/ti";
 import ApiClass from "../../../../../utils/api/class";
+import notify from "../../../../../utils/toast";
 
 function Review({ slug }) {
   const [allReviews, setAllReviews] = useState(null);
@@ -67,13 +68,14 @@ function Review({ slug }) {
                                   );
                                   setIsLoading(true);
                                   await ApiClass.markFinalDecision(
-                                    `grade-review/final-decision/${
-                                      values[idReview[0]]
+                                    `grade-review/final-decision/${values[idReview[0]]
                                     }`,
                                     {
                                       newPoint: values[newPoint[0]],
                                     }
-                                  );
+                                  ).then((response) => {
+                                    notify("success", "Finalize decision successfully!");
+                                  });;
 
                                   setIsLoading(false);
                                 }}
