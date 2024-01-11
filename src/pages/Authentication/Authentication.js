@@ -21,7 +21,7 @@ const Authentication = () => {
   return (
     <div className="w-full flex flex-col items-center bg-purple-50">
       <Header currentPage={currentPage} onSwitchPage={handleSwitchPage} />
-      <div className="w-main">
+      <div className="w-main mt-[56px]">
         <Outlet />
       </div>
     </div>
