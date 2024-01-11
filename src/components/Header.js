@@ -68,7 +68,6 @@ function Header({ currentPage, onSwitchPage }) {
   const [openNotify, setOpenNotify] = useState(false);
   const getAllNotify = async () => {
     let response = await ApiClass.getAllNotify(`notification/getAllNotify`);
-    console.log(response.data.notifications);
     setNotiList(response.data.notifications);
     setNumberNotifyNotRead(response.data.unreadCount);
   };
