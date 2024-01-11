@@ -4,7 +4,19 @@ import {
   PlusOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import { Button, Dropdown, Form, Input, Modal, Space, Spin, Table } from "antd";
+import {
+  Button,
+  Dropdown,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Popconfirm,
+  Space,
+  Spin,
+  Table,
+  Typography,
+} from "antd";
 import { useEffect, useState } from "react";
 import ApiClass from "../../../../../utils/api/class";
 import { CiMenuKebab } from "react-icons/ci";
@@ -16,14 +28,49 @@ import Papa from "papaparse";
 import { useSelector } from "react-redux";
 import ApiStudent from "../../../../../utils/api/student";
 import TextArea from "antd/es/input/TextArea";
-
+const EditableCell = ({
+  editing,
+  dataIndex,
+  title,
+  inputType,
+  record,
+  index,
+  children,
+  ...restProps
+}) => {
+  const inputNode = inputType === "number" ? <InputNumber /> : <Input />;
+  return (
+    <td {...restProps}>
+      {editing ? (
+        <Form.Item
+          name={dataIndex}
+          style={{
+            margin: 0,
+          }}
+          rules={[
+            {
+              required: true,
+              message: `Please input score or cancel edit!`,
+            },
+          ]}
+        >
+          {inputNode}
+        </Form.Item>
+      ) : (
+        children
+      )}
+    </td>
+  );
+};
 function Score({ detailsClass }) {
   const [columns, setColumns] = useState([]);
+  const [mergedColumns, setMergedColumns] = useState([]);
   const [openGradeStructure, setOpenGradeStructure] = useState(false);
   const [openReviewResult, setOpenReviewResult] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
   const [allPoint, setAllPoints] = useState({});
+
   const [myPoint, setMyPoints] = useState({});
   const [dataTable, setDataTable] = useState([]);
 
@@ -31,7 +78,67 @@ function Score({ detailsClass }) {
   const { current } = useSelector((state) => state.user);
 
   const [form] = Form.useForm();
+  const [formTable] = Form.useForm();
   const [formGradeStruct] = Form.useForm();
+
+  const [editingKey, setEditingKey] = useState("");
+  const isEditing = (record) => record.key === editingKey;
+  const edit = (record) => {
+    formTable.setFieldsValue({
+      ...record,
+    });
+    setEditingKey(record.key);
+  };
+  const cancel = () => {
+    setEditingKey("");
+  };
+  const save = async (record) => {
+    const row = await formTable.validateFields();
+    const newData = [...dataTable];
+    const index = newData.findIndex((item) => record.key === item.key);
+    if (index > -1) {
+      const item = newData[index];
+      newData.splice(index, 1, {
+        ...item,
+        ...row,
+      });
+      const listDataStudent = newData.map((element) => {
+        const { idStudent, key, ID, Name, GPA, ...listGrades } = element;
+
+        // Chuyển đổi object thành mảng
+        const myarrayGrades = Object.keys(listGrades).map((key) => ({
+          idGradeStructure: key,
+          point: listGrades[key] ? listGrades[key] : null,
+        }));
+
+        return {
+          idStudent: element.idStudent,
+          grades: myarrayGrades,
+        };
+      });
+      const dataSubmit = {
+        grades: listDataStudent,
+      };
+      updateScoreInTable(dataSubmit);
+
+      setEditingKey("");
+    } else {
+      newData.push(row);
+      setDataTable(newData);
+      setEditingKey("");
+    }
+  };
+  const updateScoreInTable = async (dataSubmit) => {
+    setIsLoading(true);
+    let response = await ApiClass.updateScoreInTable(
+      `grade/update-grades-full/${detailsClass.slug}`,
+      dataSubmit
+    ).then((response) => {
+      setAllPoints(response.data);
+      notify("success", "Update score successfully!");
+    });
+    setIsLoading(false);
+  };
 
   const handleChangeUploadGrade = (event) => {
     const { name } = event.target;
@@ -41,7 +148,6 @@ function Score({ detailsClass }) {
       (element) => element.title === name
     );
     const idTypeGrade = typeGrade._id;
-    console.log(idTypeGrade);
     var formdata = new FormData();
     formdata.append("file", file);
 
@@ -63,13 +169,15 @@ function Score({ detailsClass }) {
     for (let i = 0; i < allPoint.studentGrades?.length; i++) {
       scoreBoard.push({
         StudentId: allPoint.studentGrades[i].dataStudent.IDStudent,
-        FullName: allPoint.studentGrades[i].dataStudent.fullname
+        FullName: allPoint.studentGrades[i].dataStudent.fullname,
       });
     }
-    const csv = "\uFEFF" + Papa.unparse(scoreBoard, {
-      header: false,
-      quotes: true,
-    });
+    const csv =
+      "\uFEFF" +
+      Papa.unparse(scoreBoard, {
+        header: false,
+        quotes: true,
+      });
 
     // Tạo một Blob từ chuỗi CSV
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -87,7 +195,6 @@ function Score({ detailsClass }) {
     URL.revokeObjectURL(url);
   };
 
-
   const handleExportTemplateScore = () => {
     const scoreBoard = [];
     for (let i = 0; i < allPoint.studentGrades?.length; i++) {
@@ -95,10 +202,12 @@ function Score({ detailsClass }) {
         StudentId: allPoint.studentGrades[i].dataStudent.IDStudent,
       });
     }
-    const csv = "\uFEFF" + Papa.unparse(scoreBoard, {
-      header: false,
-      quotes: true,
-    });
+    const csv =
+      "\uFEFF" +
+      Papa.unparse(scoreBoard, {
+        header: false,
+        quotes: true,
+      });
 
     // Tạo một Blob từ chuỗi CSV
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -178,7 +287,6 @@ function Score({ detailsClass }) {
     };
     fetch();
     setOpenGradeStructure(false);
-
   };
   const handleSendReviewResult = async (values) => {
     if (values.idReview) {
@@ -190,8 +298,7 @@ function Score({ detailsClass }) {
         _idgradestructure: response.data._id,
         data: response.data,
       });
-      form.setFieldValue('content', '');
-
+      form.setFieldValue("content", "");
     } else {
       await ApiStudent.sendReviewResult(`grade-review/post-grade-review/`, {
         _idgradestructure: dataModalReview._idgradestructure,
@@ -201,7 +308,6 @@ function Score({ detailsClass }) {
       }).then((response) => {
         notify("success", "Send grade review successfully!");
       });
-
     }
   };
 
@@ -209,7 +315,6 @@ function Score({ detailsClass }) {
     if (!openReviewResult) setOpenReviewResult(true);
 
     if (myPoint?.studentGrades[0].grades[i].IDReview) {
-
       let response = await ApiStudent.getDetailReview(
         `grade-review/detail/${myPoint?.studentGrades[0].grades[i].IDReview}`
       );
@@ -229,16 +334,12 @@ function Score({ detailsClass }) {
         _idgradestructure: myPoint?.studentGrades[0].grades[i]._id,
         data: response.data,
       });
-
     } else {
       form.setFieldValue(
         "title",
         myPoint?.studentGrades[0].grades[i].columnName
       );
-      form.setFieldValue(
-        "oldPoint",
-        myPoint?.studentGrades[0].grades[i].point
-      );
+      form.setFieldValue("oldPoint", myPoint?.studentGrades[0].grades[i].point);
       setDataModalReview({
         _idgradestructure: myPoint?.studentGrades[0].grades[i]._id,
       });
@@ -283,111 +384,155 @@ function Score({ detailsClass }) {
         if (Object.keys(allPoint).length === 0) {
           getAllPoints();
         } else {
-          setColumns((prev) => {
-            let newColums = [
+          let newColums = [
+            {
+              title: "ID",
+              dataIndex: "ID",
+              key: "ID",
+            },
+            {
+              title: "Name",
+              dataIndex: "Name",
+              key: "Name",
+            },
+          ];
+          for (let i = 0; i < allPoint?.gradeStructure?.length; i++) {
+            const items = [
               {
-                title: "ID",
-                dataIndex: "ID",
-                key: "ID",
+                key: 1,
+                label: (
+                  <div className="text-sm flex gap-2 items-center">
+                    <input
+                      id={allPoint.gradeStructure[i].title}
+                      type="file"
+                      accept=".csv"
+                      onChange={handleChangeUploadGrade}
+                      hidden
+                      name={allPoint.gradeStructure[i].title}
+                    />
+                    <label for={allPoint.gradeStructure[i].title}>
+                      <UploadOutlined />
+                    </label>
+                    <label for={allPoint.gradeStructure[i].title}>
+                      Upload score
+                    </label>
+                  </div>
+                ),
               },
               {
-                title: "Name",
-                dataIndex: "Name",
-                key: "Name",
+                key: 2,
+                label: (
+                  <div
+                    className="text-sm flex gap-2 items-center"
+                    onClick={() =>
+                      handleExportScore(allPoint.gradeStructure[i].title)
+                    }
+                  >
+                    <div>
+                      <DownloadOutlined />
+                    </div>
+                    <div>Export score</div>
+                  </div>
+                ),
+              },
+              {
+                key: 3,
+                label: (
+                  <div
+                    className="text-sm flex gap-2 items-center"
+                    onClick={() =>
+                      handleFinalizeScore(allPoint.gradeStructure[i]._id)
+                    }
+                  >
+                    <div>
+                      <MdOutlinePublic />
+                    </div>
+                    <div>Public score</div>
+                  </div>
+                ),
               },
             ];
-            for (let i = 0; i < allPoint?.gradeStructure?.length; i++) {
-              const items = [
-                {
-                  key: 1,
-                  label: (
-                    <div className="text-sm flex gap-2 items-center">
-                      <input
-                        id={allPoint.gradeStructure[i].title}
-                        type="file"
-                        accept=".csv"
-                        onChange={handleChangeUploadGrade}
-                        hidden
-                        name={allPoint.gradeStructure[i].title}
-                      />
-                      <label for={allPoint.gradeStructure[i].title}>
-                        <UploadOutlined />
-                      </label>
-                      <label for={allPoint.gradeStructure[i].title}>
-                        Upload score
-                      </label>
-                    </div>
-                  ),
-                },
-                {
-                  key: 2,
-                  label: (
-                    <div
-                      className="text-sm flex gap-2 items-center"
-                      onClick={() =>
-                        handleExportScore(allPoint.gradeStructure[i].title)
-                      }
-                    >
-                      <div>
-                        <DownloadOutlined />
-                      </div>
-                      <div>Export score</div>
-                    </div>
-                  ),
-                },
-                {
-                  key: 3,
-                  label: (
-                    <div
-                      className="text-sm flex gap-2 items-center"
-                      onClick={() =>
-                        handleFinalizeScore(allPoint.gradeStructure[i]._id)
-                      }
-                    >
-                      <div>
-                        <MdOutlinePublic />
-                      </div>
-                      <div>Public score</div>
-                    </div>
-                  ),
-                },
-              ];
-              newColums.push({
-                title: (
-                  <Space className="flex justify-between">
-                    {allPoint.gradeStructure[i].title}
-                    <Dropdown
-                      trigger={["click"]}
-                      menu={{
-                        items,
-                      }}
-                      placement="bottomLeft"
-                      arrow={{
-                        pointAtCenter: true,
-                      }}
-                    >
-                      <Button
-                        shape="circle"
-                        className="absolute right-3 top-3 text-xl text-black !border-none hover:bg-gray-300 hover:text-black"
-                        icon={
-                          <CiMenuKebab width={30} height={30} color="black" />
-                        }
-                      ></Button>
-                    </Dropdown>
-                  </Space>
-                ),
-                dataIndex: allPoint.gradeStructure[i].title,
-                key: allPoint.gradeStructure[i].title,
-              });
-            }
             newColums.push({
-              title: "GPA",
-              dataIndex: "GPA",
-              key: "GPA",
+              title: (
+                <Space className="flex justify-between">
+                  {allPoint.gradeStructure[i].title}
+                  <Dropdown
+                    trigger={["click"]}
+                    menu={{
+                      items,
+                    }}
+                    placement="bottomLeft"
+                    arrow={{
+                      pointAtCenter: true,
+                    }}
+                  >
+                    <Button
+                      shape="circle"
+                      className="absolute right-3 top-3 text-xl text-black !border-none hover:bg-gray-300 hover:text-black"
+                      icon={
+                        <CiMenuKebab width={30} height={30} color="black" />
+                      }
+                    ></Button>
+                  </Dropdown>
+                </Space>
+              ),
+              dataIndex: allPoint.gradeStructure[i]._id,
+              editable: true,
             });
-
-            return newColums;
+          }
+          newColums.push({
+            title: "GPA",
+            dataIndex: "GPA",
+            key: "GPA",
           });
+          newColums.push({
+            title: "operation",
+            dataIndex: "operation",
+            render: (_, record) => {
+              const editable = isEditing(record);
+              return editable ? (
+                <span>
+                  <Typography.Link
+                    onClick={() => save(record)}
+                    style={{
+                      marginRight: 8,
+                    }}
+                  >
+                    Save
+                  </Typography.Link>
+                  <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+                    <a>Cancel</a>
+                  </Popconfirm>
+                </span>
+              ) : (
+                <Typography.Link
+                  disabled={editingKey !== ""}
+                  onClick={() => edit(record)}
+                >
+                  Edit
+                </Typography.Link>
+              );
+            },
+          });
+          const newMergeColumns = newColums.map((col) => {
+            if (!col.editable) {
+              return col;
+            }
+
+            return {
+              ...col,
+              onCell: (record) => ({
+                record,
+                inputType: "number",
+                dataIndex: col.dataIndex,
+                title: col.title,
+                editing: isEditing(record),
+              }),
+            };
+          });
+
+          setMergedColumns(newMergeColumns);
+
           setDataTable((prev) => {
             let dataTable = [];
             if (allPoint?.studentGrades) {
@@ -398,10 +543,13 @@ function Score({ detailsClass }) {
                   j < allPoint?.studentGrades[i].grades.length;
                   j++
                 ) {
-                  dataPoint[allPoint?.studentGrades[i].grades[j].columnName] =
-                    allPoint?.studentGrades[i].grades[j].point;
+                  dataPoint[
+                    allPoint?.studentGrades[i].grades[j].idGradeStructure
+                  ] = allPoint?.studentGrades[i].grades[j].point;
                 }
                 dataTable.push({
+                  idStudent: allPoint?.studentGrades[i].dataStudent._id,
+                  key: allPoint?.studentGrades[i].dataStudent.IDStudent,
                   ID: allPoint?.studentGrades[i].dataStudent.IDStudent,
                   Name: allPoint?.studentGrades[i].dataStudent.fullname,
                   ...dataPoint,
@@ -515,14 +663,16 @@ function Score({ detailsClass }) {
         }
       }
     }
-
-  }, [allPoint, myPoint, detailsClass]);
+  }, [allPoint, myPoint, detailsClass, editingKey]);
 
   useEffect(() => {
     if (detailsClass) {
-      formGradeStruct.setFieldValue('gradeStructure', detailsClass?.gradeStructure)
+      formGradeStruct.setFieldValue(
+        "gradeStructure",
+        detailsClass?.gradeStructure
+      );
     }
-  }, [detailsClass])
+  }, [detailsClass]);
 
   return (
     <div className="w-full flex justify-center min-h-screen relative">
@@ -559,15 +709,35 @@ function Score({ detailsClass }) {
         )}
 
         <Spin spinning={isLoading}>
+          {detailsClass && checkIsTeacher() ? (
+            <Form form={formTable} component={false}>
+              <Table
+                components={{
+                  body: {
+                    cell: EditableCell,
+                  },
+                }}
+                bordered
+                columns={mergedColumns}
+                dataSource={dataTable}
+                pagination={{
+                  position: ["bottomCenter"],
 
-          <Table
-            columns={columns}
-            dataSource={dataTable}
-            pagination={{
-              position: ["bottomCenter"],
-            }}
-          />
-
+                  onChange: cancel,
+                }}
+                rowClassName="editable-row"
+              />
+            </Form>
+          ) : (
+            <Table
+              bordered
+              columns={columns}
+              dataSource={dataTable}
+              pagination={{
+                position: ["bottomCenter"],
+              }}
+            />
+          )}
         </Spin>
       </div>
       <Modal open={openGradeStructure} footer={null} closeIcon={null}>
@@ -589,9 +759,7 @@ function Score({ detailsClass }) {
           >
             <div className="text-lg mb-5">Grade structure</div>
 
-            <Form.List
-              name="gradeStructure"
-            >
+            <Form.List name="gradeStructure">
               {(fields, { add, remove }) => (
                 <>
                   {fields.map(({ key, name, ...restField }) => (
@@ -679,7 +847,6 @@ function Score({ detailsClass }) {
       <Modal open={openReviewResult} footer={null} closeIcon={null}>
         <Spin spinning={isLoading}>
           <div className="pr-4 !max-h-[600px] overflow-y-auto">
-
             <Form
               form={form}
               name="reviewResult"
@@ -794,7 +961,6 @@ function Score({ detailsClass }) {
                 )}
               </Form.Item>
             </Form>
-
           </div>
         </Spin>
       </Modal>

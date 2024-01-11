@@ -20,6 +20,7 @@ import {
   Badge,
   Image,
   Avatar,
+  Spin,
 } from "antd";
 import { io } from "socket.io-client";
 import ApiUser from "../utils/api/user";
@@ -39,17 +40,17 @@ function timeAgo(dateString) {
   const years = Math.floor(days / 365);
 
   if (years > 0) {
-    return `${years} ${years === 1 ? 'year' : 'years'} ago`;
+    return `${years} ${years === 1 ? "year" : "years"} ago`;
   } else if (months > 0) {
-    return `${months} ${months === 1 ? 'month' : 'months'} ago`;
+    return `${months} ${months === 1 ? "month" : "months"} ago`;
   } else if (days > 0) {
-    return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+    return `${days} ${days === 1 ? "day" : "days"} ago`;
   } else if (hours > 0) {
-    return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+    return `${hours} ${hours === 1 ? "hour" : "hours"} ago`;
   } else if (minutes > 0) {
-    return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+    return `${minutes} ${minutes === 1 ? "minute" : "minutes"} ago`;
   } else {
-    return `${seconds} ${seconds === 1 ? 'second' : 'seconds'} ago`;
+    return `${seconds} ${seconds === 1 ? "second" : "seconds"} ago`;
   }
 }
 function Header({ currentPage, onSwitchPage }) {
@@ -73,41 +74,44 @@ function Header({ currentPage, onSwitchPage }) {
   };
   const renderNotificationList = () => {
     return (
-      <div className="w-[400px] mt-1 bg-gray-200 rounded-2xl px-[30px] py-6 shadow-md z-10 max-h-[500px] overflow-y-auto">
-        <div className="flex flex-col gap-3 mt-2.5">
-          {notiList.map((noti, index) => (
-            <div key={index} className="px-4 py-3 bg-white rounded-5 flex rounded gap-3 cursor-pointer hover:shadow-lg hover:bg-gray-50" onClick={()=>{
-              setOpenNotify(false);
-              navigate(noti.url)
-            } }>
-              <img
-                    class="h-12 w-12 rounded-full"
-                    src={noti?.senderId?.avatar}
-                    alt=""
-                  />
-              <div className="text-sm font-normal">
-                <div className="line-clamp-3">{noti.message}</div>
-                <div>{timeAgo(noti.createdAt)}</div>
+      <Spin spinning={loading}>
+        <div className="w-[400px] mt-1 bg-gray-200 rounded-2xl px-[30px] py-6 shadow-md z-10 max-h-[500px] overflow-y-auto">
+          <div className="flex flex-col gap-3 mt-2.5">
+            {notiList.map((noti, index) => (
+              <div
+                key={index}
+                className="px-4 py-3 bg-white rounded-5 flex rounded gap-3 cursor-pointer hover:shadow-lg hover:bg-gray-50"
+                onClick={() => {
+                  setOpenNotify(false);
+                  navigate(noti.url);
+                }}
+              >
+                <img
+                  class="h-12 w-12 rounded-full"
+                  src={noti?.senderId?.avatar}
+                  alt=""
+                />
+                <div className="text-sm font-normal">
+                  <div className="line-clamp-3">{noti.message}</div>
+                  <div>{timeAgo(noti.createdAt)}</div>
+                </div>
+               
               </div>
-              {/* <div className="text-15 font-medium text-gray-13">
-                {noti.content}
-              </div> */}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      </Spin>
     );
   };
 
   const handleReadAllNotify = async () => {
-  
-     await ApiUser.readAllNotify(`notification/mark-all-as-read`).then((res)=>{
+    setLoading(true);
+    await ApiUser.readAllNotify(`notification/mark-all-as-read`).then((res) => {
       setNumberNotifyNotRead(res.data.unreadCount);
       setNotiList(res.data.notifications);
-     });
-  }
-  
-  
+      setLoading(false);
+    });
+  };
 
   const handleOk = (values) => {
     const fetch = async () => {
@@ -138,7 +142,6 @@ function Header({ currentPage, onSwitchPage }) {
     setOpenJoinClass(false);
   };
 
-  
   const handleSwitch = () => {
     if (currentPage === "login") {
       onSwitchPage("register");
@@ -153,7 +156,6 @@ function Header({ currentPage, onSwitchPage }) {
   const handleOpenChange = (newOpen) => {
     setOpenPopover(newOpen);
   };
-  
 
   useEffect(() => {
     if (!isLoggin) {
@@ -210,7 +212,6 @@ function Header({ currentPage, onSwitchPage }) {
   //   getUser();
 
   // }, []);
-
 
   useEffect(() => {
     const socket = io("http://localhost:5000/");
@@ -320,7 +321,7 @@ function Header({ currentPage, onSwitchPage }) {
                 </Badge>
               </div>
             </Dropdown>
-            <div class="relative ml-3">
+            <div class="relative ">
               <div>
                 <button
                   type="button"

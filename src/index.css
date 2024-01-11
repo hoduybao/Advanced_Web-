@@ -39,3 +39,15 @@ code {
 .ant-collapse-expand-icon{
   display: none !important;
 }
+.editable-row .ant-form-item-explain {
+  position: absolute;
+  top: 100%;
+  font-size: 12px;
+}
+.ant-btn-primary{
+  background-color: #1e90ff;
+
+}
+.ant-popover-inner  {
+  padding: 10px 15px !important;
+}

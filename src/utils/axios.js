@@ -1,5 +1,7 @@
 import axios from "axios";
 import { persistor } from '../store/store';
+import { logout } from "../store/user/userSlice";
+import { useDispatch } from "react-redux";
 
 
 const instance = axios.create({
@@ -48,6 +50,7 @@ instance.interceptors.response.use(
       //   message: `Session expired!`,
       //   placement: "topRight",
       // });
+
       window.localStorage.removeItem("persist:ggclassroom/user")
       window.location.reload()
     }

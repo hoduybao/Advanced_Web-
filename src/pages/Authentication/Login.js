@@ -108,11 +108,15 @@ function Login() {
       setErrors(newErrors);
     }
   };
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleLogin(event);
+    }
+  };
+  const loginGoogle = () => {
+    window.open("http://localhost:8080/api/auth/google", "_self");
+  };
 
-  const loginGoogle=()=>{
-    window.open("http://localhost:8080/api/auth/google","_self")
-  }
-  
   return (
     <div className="relative w-full min-h-screen">
       <Toast />
@@ -124,6 +128,7 @@ function Login() {
         <div className="p-8 text-sm flex flex-col">
           <label>Email</label>
           <input
+            onKeyDown={handleKeyDown}
             value={signin.email}
             onChange={handleChange}
             name="email"
@@ -135,6 +140,7 @@ function Login() {
           )}
           <label className="mt-4">Password</label>
           <input
+            onKeyDown={handleKeyDown}
             value={signin.password}
             onChange={handleChange}
             name="password"

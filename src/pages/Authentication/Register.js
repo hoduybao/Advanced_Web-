@@ -76,9 +76,8 @@ function Register() {
         });
 
         if (response.success) {
-          setLoading(false);  
-          navigate("/auth/login",{ state: { fromRegister: true } });
-
+          setLoading(false);
+          navigate("/auth/login", { state: { fromRegister: true } });
         } else {
           setLoading(false);
           newErrors.email = response.message;
@@ -88,6 +87,11 @@ function Register() {
       fetch();
     } else {
       setErrors(newErrors);
+    }
+  };
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleRegister(event);
     }
   };
 
@@ -100,6 +104,7 @@ function Register() {
         <div className="p-8 text-sm flex flex-col">
           <label>Full Name</label>
           <input
+            onKeyDown={handleKeyDown}
             value={signup.name}
             name="name"
             onChange={handleChange}
@@ -112,6 +117,7 @@ function Register() {
 
           <label className="mt-4">Email</label>
           <input
+            onKeyDown={handleKeyDown}
             value={signup.email}
             name="email"
             onChange={handleChange}
@@ -123,6 +129,7 @@ function Register() {
           )}
           <label className="mt-4">Password</label>
           <input
+            onKeyDown={handleKeyDown}
             value={signup.password}
             name="password"
             onChange={handleChange}
@@ -134,6 +141,7 @@ function Register() {
           )}
           <label className="mt-4">Confirm Password</label>
           <input
+            onKeyDown={handleKeyDown}
             value={signup.confirm}
             name="confirm"
             onChange={handleChange}
