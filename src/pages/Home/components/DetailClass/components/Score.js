@@ -213,7 +213,6 @@ function Score({ detailsClass }) {
       let response = await ApiStudent.getDetailReview(
         `grade-review/detail/${myPoint?.studentGrades[0].grades[i].IDReview}`
       );
-      console.log(response.data.oldPoint)
       form.setFieldValue(
         "title",
         myPoint?.studentGrades[0].grades[i].columnName
@@ -238,7 +237,7 @@ function Score({ detailsClass }) {
       );
       form.setFieldValue(
         "oldPoint",
-        myPoint?.studentGrades[0].grades[i].oldPoint
+        myPoint?.studentGrades[0].grades[i].point
       );
       setDataModalReview({
         _idgradestructure: myPoint?.studentGrades[0].grades[i]._id,
