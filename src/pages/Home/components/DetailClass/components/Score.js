@@ -231,13 +231,13 @@ function Score({ detailsClass }) {
     for (let i = 0; i < allPoint.studentGrades?.length; i++) {
       scoreBoard.push({
         mssv: allPoint.studentGrades[i].dataStudent.IDStudent,
-        grade: allPoint.studentGrades[i].grades.find(
+        mark: allPoint.studentGrades[i].grades.find(
           (item) => item.columnName === name
         ).point,
       });
     }
     const csv = Papa.unparse(scoreBoard, {
-      header: false,
+      header: true,
       quotes: true,
     });
 
@@ -257,7 +257,28 @@ function Score({ detailsClass }) {
     URL.revokeObjectURL(url);
   };
 
+
   const handleExportGradeBoard = () => {
+    // Lấy danh sách tất cả các cột điểm từ dữ liệu
+    const dataTable = allPoint.studentGrades.map((student) => {
+      // Tạo một đối tượng mới để lưu trữ dữ liệu xuất
+      const exportData = {
+        ID: student.dataStudent.IDStudent,
+        Name: student.dataStudent.fullname,
+      };
+
+      // Lặp qua từng cột điểm và thêm vào dữ liệu xuất
+      student.grades.forEach((grade) => {
+        exportData[grade.columnName] = grade.point;
+      });
+
+      // Thêm cột GPA vào dữ liệu xuất
+      exportData.GPA = student.averagePoint;
+
+      return exportData;
+    });
+
+    // Tạo chuỗi CSV từ dữ liệu
     const csv = "\uFEFF" + Papa.unparse(dataTable);
 
     // Tạo một Blob từ chuỗi CSV
@@ -275,6 +296,7 @@ function Score({ detailsClass }) {
     // Giải phóng URL đối tượng
     URL.revokeObjectURL(url);
   };
+
 
   const handleGradeStructure = (values) => {
     const fetch = async () => {
