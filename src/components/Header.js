@@ -95,7 +95,7 @@ function Header({ currentPage, onSwitchPage }) {
                   <div className="line-clamp-3">{noti.message}</div>
                   <div>{timeAgo(noti.createdAt)}</div>
                 </div>
-               
+
               </div>
             ))}
           </div>
@@ -214,7 +214,7 @@ function Header({ currentPage, onSwitchPage }) {
   // }, []);
 
   useEffect(() => {
-    const socket = io("http://localhost:5000/");
+    const socket = io("https://bth-classroom.onrender.com/");
 
     if (isLoggin) {
       socket.on("newNotify", (data) => {
