@@ -216,6 +216,8 @@ function Header({ currentPage, onSwitchPage }) {
   useEffect(() => {
     const socket = io("https://bth-classroom.onrender.com/");
 
+    console.log(socket);
+
     if (isLoggin) {
       socket.on("newNotify", (data) => {
         if (data.success) {
