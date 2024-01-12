@@ -49,7 +49,7 @@ const EditableCell = ({
           }}
           rules={[
             {
-              required: true,
+              required: false,
               message: `Please input score or cancel edit!`,
             },
           ]}
@@ -108,8 +108,9 @@ function Score({ detailsClass }) {
         // Chuyển đổi object thành mảng
         const myarrayGrades = Object.keys(listGrades).map((key) => ({
           idGradeStructure: key,
-          point: listGrades[key] ? listGrades[key] : null,
+          point: listGrades[key] ?? null,
         }));
+
 
         return {
           idStudent: element.idStudent,
